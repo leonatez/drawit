@@ -1,0 +1,29 @@
+# deps
+node_modules/
+
+# playwright mcp artifacts
+.playwright-mcp/
+
+# next.js
+.next/
+out/
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# data (local storage, not committed)
+data/
+
+# screenshots / test artifacts
+*.png
+*.jpg
+*.jpeg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
