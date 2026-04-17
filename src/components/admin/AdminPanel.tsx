@@ -7,7 +7,7 @@ import type { UserProfile, UserType, AdminSettings } from '@/types';
 import toast from 'react-hot-toast';
 
 export default function AdminPanel() {
-  const { setShowAdmin, adminSettings, setAdminSettings } = useEditorStore();
+  const { setShowAdmin, adminSettings, setAdminSettings, user } = useEditorStore();
   const [tab, setTab] = useState<'settings' | 'users'>('settings');
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [localSettings, setLocalSettings] = useState<AdminSettings>({ ...adminSettings });
@@ -55,6 +55,28 @@ export default function AdminPanel() {
       toast.error('Failed to update user');
     }
   };
+
+  if (user?.user_type !== 'admin') {
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+        onClick={() => setShowAdmin(false)}
+      >
+        <div
+          className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-2xl p-8 shadow-2xl text-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="text-[#cdd6f4] text-sm mb-4">You must be signed in as an admin to access this panel.</p>
+          <button
+            onClick={() => setShowAdmin(false)}
+            className="bg-[#89b4fa] text-[#1e1e2e] rounded-lg px-4 py-2 text-sm font-bold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

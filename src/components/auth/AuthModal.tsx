@@ -20,7 +20,10 @@ export default function AuthModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!email || !password) {
+      toast.error('Please enter your email and password.');
+      return;
+    }
     setLoading(true);
 
     try {
@@ -63,8 +66,10 @@ export default function AuthModal() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs text-[#6c7086] block mb-1">Email</label>
+            <label htmlFor="auth-email" className="text-xs text-[#6c7086] block mb-1">Email</label>
             <input
+              id="auth-email"
+              name="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -74,9 +79,11 @@ export default function AuthModal() {
             />
           </div>
           <div>
-            <label className="text-xs text-[#6c7086] block mb-1">Password</label>
+            <label htmlFor="auth-password" className="text-xs text-[#6c7086] block mb-1">Password</label>
             <div className="relative">
               <input
+                id="auth-password"
+                name="password"
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
