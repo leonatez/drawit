@@ -73,7 +73,6 @@ export default function AuthModal() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               autoFocus
               className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#89b4fa]"
             />
@@ -87,8 +86,6 @@ export default function AuthModal() {
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
                 className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded-lg px-3 py-2 pr-9 text-sm outline-none focus:border-[#89b4fa]"
               />
               <button
