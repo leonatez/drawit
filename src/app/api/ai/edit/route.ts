@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { editImage } from '@/lib/ai/gemini';
 import { readPictureBase64, savePictureFile, loadProject, saveProject, saveVersionSnapshot } from '@/lib/storage';
 import { parseMentions } from '@/lib/utils';
+import { requireMember } from '@/lib/auth-guard';
 import { nanoid } from 'nanoid';
 import type { EditRequest, ResolvedMention } from '@/types';
 
 export async function POST(req: NextRequest) {
+  const guard = await requireMember();
+  if (!guard.ok) return guard.response;
+
   const body: EditRequest = await req.json();
   const { projectId, prompt, mentions } = body;
 
@@ -58,9 +62,11 @@ export async function POST(req: NextRequest) {
     } catch { /* skip */ }
   }
 
-  // Determine target picture (first box mention's picture, or first picture mention)
-  const firstMention = mentions[0];
-  const targetPictureId = firstMention?.pictureId ?? project.pictures[0]?.id;
+  // Target is the picture that owns the first box mention (the box defines the destination).
+  // Fall back to the first picture mention, then the first picture in the project.
+  const boxMention = mentions.find((m) => m.type === 'box');
+  const targetPictureId =
+    boxMention?.pictureId ?? mentions[0]?.pictureId ?? project.pictures[0]?.id;
 
   if (!targetPictureId || !pictureBase64Map[targetPictureId]) {
     return NextResponse.json({ error: 'target picture not found' }, { status: 400 });

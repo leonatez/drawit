@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {
   MousePointer2, Square, Upload, Settings, LogOut,
-  LogIn, User, Save, ChevronDown, Sparkles,
+  LogIn, Save, ChevronDown, Sparkles, FolderOpen,
 } from 'lucide-react';
 import { useEditorStore } from '@/store';
 import { sceneSerializerRef } from '@/lib/scene-ref';
@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 
 export default function TopBar() {
   const {
-    tool, setTool, user, setShowAuth, setShowAdmin,
+    tool, setTool, user, setShowAuth, setShowAdmin, setShowProjects,
     projectName, setProjectName, isDirty, toProject,
     markClean, adminSettings,
   } = useEditorStore();
@@ -93,10 +93,19 @@ export default function TopBar() {
   return (
     <div className="h-10 bg-[#2a2a3e] border-b border-[#3a3a4e] flex items-center px-3 gap-2 flex-shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-1.5 mr-2">
+      <div className="flex items-center gap-1.5 mr-1">
         <Sparkles size={14} className="text-[#89b4fa]" />
         <span className="text-sm font-bold text-[#cdd6f4]">DrawIt</span>
       </div>
+
+      {/* Projects switcher */}
+      <button
+        onClick={() => setShowProjects(true)}
+        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313145] transition-colors mr-1"
+        title="Manage projects"
+      >
+        <FolderOpen size={12} />
+      </button>
 
       {/* Project name */}
       <input

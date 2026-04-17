@@ -2,8 +2,7 @@ import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 import { annotateImageWithBox } from '@/lib/image-utils.server';
 import type { ResolvedMention } from '@/types';
 
-const IMAGE_MODEL = 'gemini-2.0-flash-preview-image-generation';
-const VISION_MODEL = 'gemini-1.5-pro';
+const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
 
 function getGenAI() {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);

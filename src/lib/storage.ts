@@ -120,6 +120,47 @@ export async function readVersionSnapshot(
   return result;
 }
 
+// ─── Project listing / deletion ──────────────────────────────────────────────
+
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  updatedAt: string;
+  pictureCount: number;
+}
+
+export async function listProjects(): Promise<ProjectSummary[]> {
+  await ensureDataDirs();
+  let dirs: string[];
+  try {
+    dirs = await fs.readdir(PROJECTS_DIR);
+  } catch {
+    return [];
+  }
+
+  const results = await Promise.all(
+    dirs.map(async (dir): Promise<ProjectSummary | null> => {
+      try {
+        const file = path.join(PROJECTS_DIR, dir, 'project.json');
+        const raw = await fs.readFile(file, 'utf-8');
+        const p = JSON.parse(raw) as Project;
+        return { id: p.id, name: p.name, updatedAt: p.updatedAt, pictureCount: p.pictures.length };
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return (results.filter(Boolean) as ProjectSummary[]).sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
+}
+
+export async function deleteProject(projectId: string): Promise<void> {
+  const dir = projectDir(projectId);
+  await fs.rm(dir, { recursive: true, force: true });
+}
+
 // ─── Admin settings ──────────────────────────────────────────────────────────
 
 const defaultSettings: AdminSettings = {

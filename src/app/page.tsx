@@ -12,6 +12,7 @@ import LayersPanel from '@/components/sidebar/LayersPanel';
 import HistoryPanel from '@/components/sidebar/HistoryPanel';
 import AuthModal from '@/components/auth/AuthModal';
 import AdminPanel from '@/components/admin/AdminPanel';
+import ProjectsModal from '@/components/projects/ProjectsModal';
 
 const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
   ssr: false,
@@ -23,7 +24,7 @@ const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
 });
 
 export default function HomePage() {
-  const { setUser, showAuth, showAdmin, projectId, toProject, markClean } = useEditorStore();
+  const { setUser, showAuth, showAdmin, showProjects, projectId, toProject, markClean } = useEditorStore();
 
   // ── Handle ?admin=1 query param ───────────────────────────────────────────
   useEffect(() => {
@@ -120,8 +121,28 @@ export default function HomePage() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
       if (e.key === 'v' || e.key === 'V') useEditorStore.getState().setTool('select');
       if (e.key === 'b' || e.key === 'B') useEditorStore.getState().setTool('draw-box');
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const state = useEditorStore.getState();
+        if (state.selectedBoxId) {
+          state.removeSelectionBox(state.selectedBoxId);
+        } else if (state.selectedPictureId) {
+          const pic = state.pictures.find((p) => p.id === state.selectedPictureId);
+          state.removePicture(state.selectedPictureId);
+          if (pic) toast(`Deleted ${pic.name}`, { icon: '🗑️' });
+        }
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        useEditorStore.getState().undo();
+        return;
+      }
+
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         const state = useEditorStore.getState();
@@ -162,6 +183,7 @@ export default function HomePage() {
 
       {showAuth && <AuthModal />}
       {showAdmin && <AdminPanel />}
+      {showProjects && <ProjectsModal />}
     </div>
   );
 }

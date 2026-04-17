@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { History, RotateCcw, ChevronDown, ChevronRight } from 'lucide-react';
 import { useEditorStore } from '@/store';
+import { sceneRestorerRef } from '@/lib/scene-ref';
 import toast from 'react-hot-toast';
 
 export default function HistoryPanel() {
@@ -23,8 +24,11 @@ export default function HistoryPanel() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // Update scene JSON and force re-render
-      useEditorStore.getState().setSceneJSON(data.sceneJSON);
+      // Apply scene JSON to Excalidraw canvas
+      if (data.sceneJSON) {
+        useEditorStore.getState().setSceneJSON(data.sceneJSON);
+        sceneRestorerRef.current(data.sceneJSON);
+      }
       // Force picture reload
       window.dispatchEvent(new CustomEvent('drawit:picture-updated'));
 

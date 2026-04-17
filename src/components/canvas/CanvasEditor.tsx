@@ -21,7 +21,7 @@ function toScene(screenX: number, screenY: number, vp: Viewport) {
   };
 }
 
-import { sceneSerializerRef } from '@/lib/scene-ref';
+import { sceneSerializerRef, sceneRestorerRef } from '@/lib/scene-ref';
 
 // ─── Main component ────────────────────────────────────────────────────────
 
@@ -62,6 +62,19 @@ export default function CanvasEditor() {
       } catch {
         return '{}';
       }
+    };
+
+    sceneRestorerRef.current = (json: string) => {
+      const api = excalidrawAPI.current;
+      if (!api || !json || json === '{}') return;
+      try {
+        const { restore } = require('@excalidraw/excalidraw');
+        const restored = restore(JSON.parse(json), null, null);
+        api.updateScene({
+          elements: restored.elements ?? [],
+          appState: { ...restored.appState, collaborators: new Map() },
+        });
+      } catch { /* ignore */ }
     };
   }, []);
 

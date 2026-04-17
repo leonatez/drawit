@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
-import { saveProject, loadProject } from '@/lib/storage';
+import { saveProject, loadProject, deleteProject } from '@/lib/storage';
 import type { Project } from '@/types';
 
 export async function GET(req: NextRequest) {
@@ -48,5 +48,13 @@ export async function PUT(req: NextRequest) {
 
   project.updatedAt = new Date().toISOString();
   await saveProject(project);
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get('id');
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
+
+  await deleteProject(id);
   return NextResponse.json({ ok: true });
 }

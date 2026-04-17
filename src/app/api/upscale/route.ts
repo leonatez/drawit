@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readPictureBase64, savePictureFile } from '@/lib/storage';
 import { upscaleImage } from '@/lib/ai/gemini';
+import { requireMember } from '@/lib/auth-guard';
 // sharp is a server-only module, imported dynamically below
 
 export async function POST(req: NextRequest) {
+  const guard = await requireMember();
+  if (!guard.ok) return guard.response;
+
   const { projectId, pictureId, storagePath, targetWidth, download } = await req.json();
 
   if (!storagePath) {
