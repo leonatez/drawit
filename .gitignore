@@ -1,3 +1,6 @@
+# test credentials — never commit
+TEST_CREDENTIALS.md
+
 # deps
 node_modules/
 
