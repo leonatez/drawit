@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import {
   MousePointer2, Square, Upload, Settings, LogOut,
-  LogIn, Save, ChevronDown, Sparkles, FolderOpen,
+  LogIn, Save, ChevronDown, Sparkles, FolderOpen, KeyRound,
 } from 'lucide-react';
+import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import { useEditorStore } from '@/store';
 import { sceneSerializerRef } from '@/lib/scene-ref';
 import { createClient } from '@/lib/supabase/client';
@@ -18,6 +19,7 @@ export default function TopBar() {
   } = useEditorStore();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showChangePw, setShowChangePw] = useState(false);
 
   const isAdmin = user?.user_type === 'admin';
 
@@ -96,6 +98,7 @@ export default function TopBar() {
       <div className="flex items-center gap-1.5 mr-1">
         <Sparkles size={14} className="text-[#89b4fa]" />
         <span className="text-sm font-bold text-[#cdd6f4]">DrawIt</span>
+        <span className="text-[9px] text-[#6c7086] font-mono">v0.5</span>
       </div>
 
       {/* Projects switcher */}
@@ -241,6 +244,12 @@ export default function TopBar() {
               </button>
             )}
             <button
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#cdd6f4] hover:bg-[#313145] text-left"
+              onClick={() => { setShowChangePw(true); setShowUserMenu(false); }}
+            >
+              <KeyRound size={11} /> Change Password
+            </button>
+            <button
               className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f38ba8] hover:bg-[#313145] text-left"
               onClick={handleSignOut}
             >
@@ -249,6 +258,10 @@ export default function TopBar() {
           </div>
         )}
       </div>
+
+      {showChangePw && (
+        <ChangePasswordModal onClose={() => setShowChangePw(false)} />
+      )}
     </div>
   );
 }
