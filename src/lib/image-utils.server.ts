@@ -24,8 +24,7 @@ export async function annotateImageWithBox(
 
   const svgOverlay = `
 <svg width="${imgW}" height="${imgH}" xmlns="http://www.w3.org/2000/svg">
-  <rect x="0" y="0" width="${imgW}" height="${imgH}" fill="rgba(0,0,0,0.45)"/>
-  <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="rgba(0,0,0,0)" stroke="${color}" stroke-width="4"/>
+  <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="none" stroke="${color}" stroke-width="4"/>
   <rect x="${bx}" y="${Math.max(0, by - 22)}" width="${Math.max(bw, 60)}" height="22" fill="${color}" rx="4"/>
   <text x="${bx + 6}" y="${Math.max(16, by - 6)}" fill="white" font-size="13" font-weight="bold" font-family="monospace">@${label}</text>
 </svg>`;

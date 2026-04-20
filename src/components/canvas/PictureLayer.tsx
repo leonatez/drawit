@@ -222,7 +222,7 @@ function PictureFrame({
         style={{
           position: 'absolute', top: -24, left: 0,
           background: 'rgba(30,30,46,0.85)',
-          color: '#cdd6f4', fontSize: 11, padding: '2px 7px',
+          color: '#f1f5f9', fontSize: 11, padding: '2px 7px',
           borderRadius: '4px 4px 0 0', whiteSpace: 'nowrap',
           pointerEvents: 'none',
         }}
@@ -401,7 +401,7 @@ function DrawPreview({ preview, viewport }: { preview: { x: number; y: number; w
         position: 'absolute',
         left: screen.x, top: screen.y,
         width: size.w, height: size.h,
-        border: '2px dashed #89b4fa',
+        border: '2px dashed #14b8a6',
         background: 'rgba(137,180,250,0.08)',
         pointerEvents: 'none',
       }}

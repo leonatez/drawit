@@ -14,7 +14,7 @@ export default function AdminPage() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-[#1e1e2e] text-[#6c7086] text-sm">
+    <div className="flex items-center justify-center h-screen bg-[#0f172a] text-[#64748b] text-sm">
       Redirecting…
     </div>
   );

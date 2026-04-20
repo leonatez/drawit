@@ -146,12 +146,12 @@ export default function MentionInput({ onSend, disabled }: Props) {
     <div className="relative">
       {/* Suggestions dropdown */}
       {suggestionsVisible && (
-        <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#1e1e2e] border border-[#3a3a4e] rounded-lg overflow-hidden shadow-xl z-50">
+        <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#0f172a] border border-[#334155] rounded-lg overflow-hidden shadow-xl z-50">
           {suggestions.map((s, i) => (
             <button
               key={s.label}
               className={`w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors ${
-                i === selectedSuggestionIdx ? 'bg-[#313145]' : 'hover:bg-[#313145]'
+                i === selectedSuggestionIdx ? 'bg-[#334155]' : 'hover:bg-[#334155]'
               }`}
               onMouseDown={(e) => { e.preventDefault(); insertMention(s); }}
             >
@@ -161,10 +161,10 @@ export default function MentionInput({ onSend, disabled }: Props) {
                   style={{ background: s.color }}
                 />
               ) : (
-                <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#89b4fa]/30" />
+                <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#14b8a6]/30" />
               )}
-              <span className="text-[#89b4fa] font-mono">{s.display}</span>
-              <span className="text-[#6c7086] ml-auto">{s.type}</span>
+              <span className="text-[#14b8a6] font-mono">{s.display}</span>
+              <span className="text-[#64748b] ml-auto">{s.type}</span>
             </button>
           ))}
         </div>
@@ -180,18 +180,18 @@ export default function MentionInput({ onSend, disabled }: Props) {
           disabled={disabled}
           placeholder="Type @ to mention boxes/pictures…"
           rows={1}
-          className="flex-1 bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded-lg px-3 py-2 text-xs resize-none outline-none focus:border-[#89b4fa] placeholder-[#6c7086] disabled:opacity-50"
+          className="flex-1 bg-[#0f172a] text-[#f1f5f9] border border-[#334155] rounded-lg px-3 py-2 text-xs resize-none outline-none focus:border-[#14b8a6] placeholder-[#64748b] disabled:opacity-50"
           style={{ minHeight: 36, maxHeight: 120 }}
         />
         <button
           onClick={handleSendClick}
           disabled={disabled || !value.trim()}
-          className="w-8 h-8 flex-shrink-0 rounded-lg bg-[#89b4fa] text-[#1e1e2e] flex items-center justify-center disabled:opacity-40"
+          className="w-8 h-8 flex-shrink-0 rounded-lg bg-[#14b8a6] text-[#0f172a] flex items-center justify-center disabled:opacity-40"
         >
           <Send size={13} />
         </button>
       </div>
-      <p className="text-[10px] text-[#6c7086] mt-1">Enter to send · Shift+Enter for new line</p>
+      <p className="text-[10px] text-[#64748b] mt-1">Enter to send · Shift+Enter for new line</p>
     </div>
   );
 }

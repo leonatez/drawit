@@ -52,21 +52,21 @@ export default function AuthModal() {
       onClick={() => setShowAuth(false)}
     >
       <div
-        className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-2xl p-8 w-96 shadow-2xl"
+        className="bg-[#1e293b] border border-[#334155] rounded-2xl p-8 w-96 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-bold text-[#cdd6f4]">
+          <h2 className="text-base font-bold text-[#f1f5f9]">
             {mode === 'login' ? 'Sign In' : 'Create Account'}
           </h2>
-          <button onClick={() => setShowAuth(false)} className="text-[#6c7086] hover:text-[#cdd6f4]">
+          <button onClick={() => setShowAuth(false)} className="text-[#64748b] hover:text-[#f1f5f9]">
             <X size={16} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="auth-email" className="text-xs text-[#6c7086] block mb-1">Email</label>
+            <label htmlFor="auth-email" className="text-xs text-[#64748b] block mb-1">Email</label>
             <input
               id="auth-email"
               name="email"
@@ -74,11 +74,11 @@ export default function AuthModal() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoFocus
-              className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#89b4fa]"
+              className="w-full bg-[#0f172a] text-[#f1f5f9] border border-[#334155] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#14b8a6]"
             />
           </div>
           <div>
-            <label htmlFor="auth-password" className="text-xs text-[#6c7086] block mb-1">Password</label>
+            <label htmlFor="auth-password" className="text-xs text-[#64748b] block mb-1">Password</label>
             <div className="relative">
               <input
                 id="auth-password"
@@ -86,12 +86,12 @@ export default function AuthModal() {
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded-lg px-3 py-2 pr-9 text-sm outline-none focus:border-[#89b4fa]"
+                className="w-full bg-[#0f172a] text-[#f1f5f9] border border-[#334155] rounded-lg px-3 py-2 pr-9 text-sm outline-none focus:border-[#14b8a6]"
               />
               <button
                 type="button"
                 onClick={() => setShowPw((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6c7086]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#64748b]"
               >
                 {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
@@ -101,22 +101,22 @@ export default function AuthModal() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#89b4fa] text-[#1e1e2e] rounded-lg py-2.5 text-sm font-bold disabled:opacity-50 mt-2"
+            className="w-full bg-[#14b8a6] text-[#0f172a] rounded-lg py-2.5 text-sm font-bold disabled:opacity-50 mt-2"
           >
             {loading ? '…' : mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#6c7086] mt-4">
+        <p className="text-center text-xs text-[#64748b] mt-4">
           {mode === 'login' ? (
             <>No account?{' '}
-              <button className="text-[#89b4fa] hover:underline" onClick={() => setMode('register')}>
+              <button className="text-[#14b8a6] hover:underline" onClick={() => setMode('register')}>
                 Register
               </button>
             </>
           ) : (
             <>Already have one?{' '}
-              <button className="text-[#89b4fa] hover:underline" onClick={() => setMode('login')}>
+              <button className="text-[#14b8a6] hover:underline" onClick={() => setMode('login')}>
                 Sign in
               </button>
             </>
@@ -124,7 +124,7 @@ export default function AuthModal() {
         </p>
 
         {mode === 'register' && (
-          <p className="text-[10px] text-[#6c7086] text-center mt-3 bg-[#1e1e2e] rounded-lg p-2">
+          <p className="text-[10px] text-[#64748b] text-center mt-3 bg-[#0f172a] rounded-lg p-2">
             New accounts start as <strong>Guest</strong>. An admin will upgrade you to{' '}
             <strong>Member</strong> to enable AI features.
           </p>

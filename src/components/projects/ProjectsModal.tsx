@@ -125,22 +125,22 @@ export default function ProjectsModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-xl shadow-2xl w-[560px] max-h-[70vh] flex flex-col">
+      <div className="bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl w-[560px] max-h-[70vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#3a3a4e]">
-          <FolderOpen size={15} className="text-[#89b4fa]" />
-          <span className="text-sm font-semibold text-[#cdd6f4] flex-1">Projects</span>
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#334155]">
+          <FolderOpen size={15} className="text-[#14b8a6]" />
+          <span className="text-sm font-semibold text-[#f1f5f9] flex-1">Projects</span>
           <button
             onClick={createNewProject}
             disabled={!!switching}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] bg-[#89b4fa] text-[#1e1e2e] font-semibold hover:bg-[#b4cefa] transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] bg-[#14b8a6] text-[#0f172a] font-semibold hover:bg-[#2dd4bf] transition-colors disabled:opacity-50"
           >
             <Plus size={11} />
             New Project
           </button>
           <button
             onClick={() => setShowProjects(false)}
-            className="ml-1 p-1 rounded-md text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313145] transition-colors"
+            className="ml-1 p-1 rounded-md text-[#64748b] hover:text-[#f1f5f9] hover:bg-[#334155] transition-colors"
           >
             <X size={14} />
           </button>
@@ -149,11 +149,11 @@ export default function ProjectsModal() {
         {/* Project list */}
         <div className="overflow-y-auto flex-1 p-2">
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-[#6c7086] text-xs">
+            <div className="flex items-center justify-center py-12 text-[#64748b] text-xs">
               Loading projects…
             </div>
           ) : projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 text-[#6c7086]">
+            <div className="flex flex-col items-center justify-center py-12 gap-2 text-[#64748b]">
               <FolderOpen size={28} />
               <p className="text-xs">No projects yet</p>
             </div>
@@ -167,39 +167,39 @@ export default function ProjectsModal() {
                   onClick={() => !switching && switchToProject(proj.id)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 cursor-pointer group transition-colors ${
                     isCurrent
-                      ? 'bg-[#89b4fa]/15 border border-[#89b4fa]/30'
-                      : 'hover:bg-[#313145] border border-transparent'
+                      ? 'bg-[#14b8a6]/15 border border-[#14b8a6]/30'
+                      : 'hover:bg-[#334155] border border-transparent'
                   } ${switching && !isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
                   {/* Icon */}
                   <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${
-                    isCurrent ? 'bg-[#89b4fa]/20' : 'bg-[#1e1e2e]'
+                    isCurrent ? 'bg-[#14b8a6]/20' : 'bg-[#0f172a]'
                   }`}>
                     {isLoading ? (
-                      <div className="w-3 h-3 border-2 border-[#89b4fa] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 h-3 border-2 border-[#14b8a6] border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <FolderOpen size={14} className={isCurrent ? 'text-[#89b4fa]' : 'text-[#6c7086]'} />
+                      <FolderOpen size={14} className={isCurrent ? 'text-[#14b8a6]' : 'text-[#64748b]'} />
                     )}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className={`text-xs font-medium truncate ${isCurrent ? 'text-[#89b4fa]' : 'text-[#cdd6f4]'}`}>
+                      <p className={`text-xs font-medium truncate ${isCurrent ? 'text-[#14b8a6]' : 'text-[#f1f5f9]'}`}>
                         {proj.name}
                       </p>
                       {isCurrent && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#89b4fa]/20 text-[#89b4fa] font-semibold flex-shrink-0">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#14b8a6]/20 text-[#14b8a6] font-semibold flex-shrink-0">
                           open
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
-                      <span className="flex items-center gap-1 text-[9px] text-[#6c7086]">
+                      <span className="flex items-center gap-1 text-[9px] text-[#64748b]">
                         <Clock size={8} />
                         {formatDate(proj.updatedAt)}
                       </span>
-                      <span className="flex items-center gap-1 text-[9px] text-[#6c7086]">
+                      <span className="flex items-center gap-1 text-[9px] text-[#64748b]">
                         <ImageIcon size={8} />
                         {proj.pictureCount} {proj.pictureCount === 1 ? 'image' : 'images'}
                       </span>
@@ -210,7 +210,7 @@ export default function ProjectsModal() {
                   {!isCurrent && (
                     <button
                       onClick={(e) => handleDelete(e, proj)}
-                      className="opacity-0 group-hover:opacity-100 p-1 rounded text-[#6c7086] hover:text-[#f38ba8] hover:bg-[#f38ba8]/10 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1 rounded text-[#64748b] hover:text-[#f87171] hover:bg-[#f87171]/10 transition-all"
                       title="Delete project"
                     >
                       <Trash2 size={12} />

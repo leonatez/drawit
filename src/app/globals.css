@@ -1,16 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #1e1e2e;
-  --surface: #2a2a3e;
-  --border: #3a3a4e;
-  --text: #cdd6f4;
-  --muted: #6c7086;
-  --accent: #89b4fa;
-  --danger: #f38ba8;
-  --success: #a6e3a1;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text: #f1f5f9;
+  --muted: #64748b;
+  --accent: #14b8a6;
+  --accent-light: #2dd4bf;
+  --accent-dark: #0d9488;
+  --danger: #f87171;
+  --success: #4ade80;
 }
 
 * {
@@ -21,15 +25,16 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
 
 /* Hide Excalidraw's native toolbar — we provide our own tools */
 .excalidraw .layer-ui__wrapper__top-right,
@@ -43,18 +48,18 @@ body {
 
 /* Excalidraw dark override */
 .excalidraw {
-  --color-surface-primary: #1e1e2e !important;
-  --color-surface-secondary: #2a2a3e !important;
-  --color-surface-tertiary: #313145 !important;
-  --color-on-surface: #cdd6f4 !important;
-  --color-primary: #89b4fa !important;
-  --color-primary-darker: #74a8fa !important;
-  --color-primary-darkest: #5d9bf9 !important;
-  --color-brand-hover: #313145 !important;
+  --color-surface-primary: #0f172a !important;
+  --color-surface-secondary: #1e293b !important;
+  --color-surface-tertiary: #334155 !important;
+  --color-on-surface: #f1f5f9 !important;
+  --color-primary: #14b8a6 !important;
+  --color-primary-darker: #0d9488 !important;
+  --color-primary-darkest: #0f766e !important;
+  --color-brand-hover: #334155 !important;
 }
 
 .excalidraw.theme--dark {
-  --color-surface-primary: #1e1e2e;
+  --color-surface-primary: #0f172a;
 }
 
 /* Picture frame */
@@ -65,8 +70,8 @@ body {
   user-select: none;
   transition: border-color 0.15s;
 }
-.picture-frame:hover { border-color: rgba(137,180,250,0.4); }
-.picture-frame.selected { border-color: #89b4fa; }
+.picture-frame:hover { border-color: rgba(20,184,166,0.4); }
+.picture-frame.selected { border-color: #14b8a6; }
 
 /* Selection box overlay */
 .sel-box {
@@ -81,7 +86,7 @@ body {
   width: 8px;
   height: 8px;
   background: white;
-  border: 1px solid #89b4fa;
+  border: 1px solid #14b8a6;
   border-radius: 2px;
   z-index: 10;
 }
@@ -90,25 +95,25 @@ body {
 .ctx-menu {
   position: fixed;
   z-index: 9999;
-  background: #2a2a3e;
-  border: 1px solid #3a3a4e;
-  border-radius: 8px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
   padding: 4px;
   min-width: 160px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .ctx-item {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 7px 12px;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
-  color: #cdd6f4;
-  transition: background 0.1s;
+  color: #f1f5f9;
+  transition: background 0.15s;
 }
-.ctx-item:hover { background: #313145; }
-.ctx-item.danger { color: #f38ba8; }
-.ctx-item.danger:hover { background: rgba(243,139,168,0.1); }
-.ctx-separator { height: 1px; background: #3a3a4e; margin: 4px 0; }
+.ctx-item:hover { background: #334155; }
+.ctx-item.danger { color: #f87171; }
+.ctx-item.danger:hover { background: rgba(248,113,113,0.1); }
+.ctx-separator { height: 1px; background: #334155; margin: 4px 0; }

@@ -127,7 +127,7 @@ export default function CanvasEditor() {
   // ── Stable Excalidraw props ────────────────────────────────────────────────
   const initialData = useMemo(() => ({
     appState: {
-      viewBackgroundColor: '#1e1e2e',
+      viewBackgroundColor: '#0f172a',
       gridSize: null as null,
       collaborators: new Map(),
     },

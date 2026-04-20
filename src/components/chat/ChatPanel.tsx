@@ -108,13 +108,13 @@ export default function ChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#2a2a3e]">
+    <div className="flex flex-col h-full bg-[#1e293b]">
       {/* Header */}
-      <div className="px-3 py-2 border-b border-[#3a3a4e] flex items-center gap-2">
-        <MessageSquare size={14} className="text-[#89b4fa]" />
-        <span className="text-xs font-semibold text-[#cdd6f4]">AI Chat</span>
+      <div className="px-3 py-2 border-b border-[#334155] flex items-center gap-2">
+        <MessageSquare size={14} className="text-[#14b8a6]" />
+        <span className="text-xs font-semibold text-[#f1f5f9]">AI Chat</span>
         {!isMember && (
-          <div className="ml-auto flex items-center gap-1 text-[10px] text-[#fab387]">
+          <div className="ml-auto flex items-center gap-1 text-[10px] text-[#fb923c]">
             <Lock size={10} />
             <span>Member only</span>
           </div>
@@ -125,14 +125,14 @@ export default function ChatPanel() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3">
         {chatMessages.length === 0 && (
           <div className="text-center mt-8 space-y-2">
-            <Sparkles size={24} className="mx-auto text-[#6c7086]" />
-            <p className="text-xs text-[#6c7086]">
+            <Sparkles size={24} className="mx-auto text-[#64748b]" />
+            <p className="text-xs text-[#64748b]">
               Upload pictures, draw selection boxes,<br />
               then describe your edits here.
             </p>
-            <div className="text-[10px] text-[#6c7086] bg-[#1e1e2e] rounded-lg p-3 text-left space-y-1">
-              <p>• <code className="text-[#89b4fa]">@01</code> — reference a box</p>
-              <p>• <code className="text-[#89b4fa]">@picture-1</code> — reference a picture</p>
+            <div className="text-[10px] text-[#64748b] bg-[#0f172a] rounded-lg p-3 text-left space-y-1">
+              <p>• <code className="text-[#14b8a6]">@01</code> — reference a box</p>
+              <p>• <code className="text-[#14b8a6]">@picture-1</code> — reference a picture</p>
               <p>• <em>"replace the gun in @01 with a book"</em></p>
               <p>• <em>"use the style of @picture-2 on @picture-1"</em></p>
             </div>
@@ -143,15 +143,15 @@ export default function ChatPanel() {
         ))}
         {isAiLoading && (
           <div className="flex gap-2 items-start">
-            <div className="w-6 h-6 rounded-full bg-[#89b4fa] flex items-center justify-center flex-shrink-0">
-              <Sparkles size={12} className="text-[#1e1e2e]" />
+            <div className="w-6 h-6 rounded-full bg-[#14b8a6] flex items-center justify-center flex-shrink-0">
+              <Sparkles size={12} className="text-[#0f172a]" />
             </div>
-            <div className="bg-[#1e1e2e] rounded-xl rounded-tl-none px-3 py-2">
+            <div className="bg-[#0f172a] rounded-xl rounded-tl-none px-3 py-2">
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-[#6c7086] animate-bounce"
+                    className="w-1.5 h-1.5 rounded-full bg-[#64748b] animate-bounce"
                     style={{ animationDelay: `${i * 0.15}s` }}
                   />
                 ))}
@@ -162,13 +162,13 @@ export default function ChatPanel() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-[#3a3a4e] p-2">
+      <div className="border-t border-[#334155] p-2">
         {isMember ? (
           <MentionInput onSend={handleSend} disabled={isAiLoading} />
         ) : (
           <button
             onClick={() => setShowAuth(true)}
-            className="w-full py-2 rounded-lg bg-[#89b4fa] text-[#1e1e2e] text-xs font-bold"
+            className="w-full py-2 rounded-lg bg-[#14b8a6] text-[#0f172a] text-xs font-bold"
           >
             Sign in to use AI
           </button>
@@ -184,22 +184,22 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
   const isUser = msg.role === 'user';
 
   // Highlight @mentions in message content
-  const highlighted = msg.content.replace(/@([\w-]+)/g, '<span style="color:#89b4fa;font-weight:600">@$1</span>');
+  const highlighted = msg.content.replace(/@([\w-]+)/g, '<span style="color:#14b8a6;font-weight:600">@$1</span>');
 
   return (
     <div className={`flex gap-2 items-start ${isUser ? 'flex-row-reverse' : ''}`}>
       <div
         className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold"
-        style={{ background: isUser ? '#89b4fa' : '#313145', color: isUser ? '#1e1e2e' : '#cdd6f4' }}
+        style={{ background: isUser ? '#14b8a6' : '#334155', color: isUser ? '#0f172a' : '#f1f5f9' }}
       >
         {isUser ? 'U' : 'AI'}
       </div>
       <div
         className="max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed"
         style={{
-          background: isUser ? '#89b4fa20' : '#1e1e2e',
+          background: isUser ? 'rgba(20,184,166,0.12)' : '#0f172a',
           borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-          color: '#cdd6f4',
+          color: '#f1f5f9',
         }}
         dangerouslySetInnerHTML={{ __html: highlighted }}
       />

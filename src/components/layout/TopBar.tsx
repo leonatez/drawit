@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {
   MousePointer2, Square, Upload, Settings, LogOut,
-  LogIn, Save, ChevronDown, Sparkles, FolderOpen, KeyRound,
+  LogIn, Save, ChevronDown, FolderOpen, KeyRound,
 } from 'lucide-react';
 import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import { useEditorStore } from '@/store';
@@ -93,18 +93,25 @@ export default function TopBar() {
   };
 
   return (
-    <div className="h-10 bg-[#2a2a3e] border-b border-[#3a3a4e] flex items-center px-3 gap-2 flex-shrink-0">
+    <div className="h-10 bg-[#1e293b] border-b border-[#334155] flex items-center px-3 gap-2 flex-shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-1.5 mr-1">
-        <Sparkles size={14} className="text-[#89b4fa]" />
-        <span className="text-sm font-bold text-[#cdd6f4]">DrawIt</span>
-        <span className="text-[9px] text-[#6c7086] font-mono">v0.5</span>
+        <svg width="20" height="20" viewBox="0 0 80 80" fill="none">
+          <rect width="80" height="80" rx="20" fill="#1e293b" stroke="#14b8a6" strokeWidth="2.5"/>
+          <rect x="34" y="18" width="14" height="34" rx="4" transform="rotate(30 34 18)" fill="#14b8a6"/>
+          <path d="M52 52 L57 62 L47 57 Z" fill="#0d9488"/>
+          <line x1="38" y1="21" x2="44" y2="37" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+          <path d="M62 16 L63.2 19.8 L67 21 L63.2 22.2 L62 26 L60.8 22.2 L57 21 L60.8 19.8 Z" fill="#f1f5f9"/>
+          <path d="M18 32 L18.7 34 L20.7 34.7 L18.7 35.4 L18 37.4 L17.3 35.4 L15.3 34.7 L17.3 34 Z" fill="#14b8a6"/>
+        </svg>
+        <span className="text-sm font-bold text-[#f1f5f9]">draw<span className="text-[#14b8a6]">it</span></span>
+        <span className="text-[9px] text-[#64748b] font-mono">v0.5</span>
       </div>
 
       {/* Projects switcher */}
       <button
         onClick={() => setShowProjects(true)}
-        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313145] transition-colors mr-1"
+        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#64748b] hover:text-[#f1f5f9] hover:bg-[#334155] transition-colors mr-1"
         title="Manage projects"
       >
         <FolderOpen size={12} />
@@ -114,16 +121,16 @@ export default function TopBar() {
       <input
         value={projectName}
         onChange={(e) => setProjectName(e.target.value)}
-        className="bg-transparent text-xs text-[#cdd6f4] border-b border-transparent hover:border-[#3a3a4e] focus:border-[#89b4fa] outline-none px-1 w-36"
+        className="bg-transparent text-xs text-[#f1f5f9] border-b border-transparent hover:border-[#334155] focus:border-[#14b8a6] outline-none px-1 w-36"
         title="Project name"
       />
 
       {/* Dirty indicator */}
       {isDirty && (
-        <span className="text-[10px] text-[#6c7086]">●</span>
+        <span className="text-[10px] text-[#64748b]">●</span>
       )}
 
-      <div className="h-4 w-px bg-[#3a3a4e] mx-1" />
+      <div className="h-4 w-px bg-[#334155] mx-1" />
 
       {/* Tool buttons */}
       <ToolButton
@@ -143,11 +150,11 @@ export default function TopBar() {
         <span className="text-[10px]">Box</span>
       </ToolButton>
 
-      <div className="h-4 w-px bg-[#3a3a4e] mx-1" />
+      <div className="h-4 w-px bg-[#334155] mx-1" />
 
       {/* Upload */}
       <label
-        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#cdd6f4] hover:bg-[#313145] cursor-pointer transition-colors"
+        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#f1f5f9] hover:bg-[#334155] cursor-pointer transition-colors"
         title="Upload images"
       >
         <Upload size={12} />
@@ -164,7 +171,7 @@ export default function TopBar() {
       {/* Save */}
       <button
         onClick={handleSave}
-        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#cdd6f4] hover:bg-[#313145] transition-colors"
+        className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#f1f5f9] hover:bg-[#334155] transition-colors"
         title="Save project (Ctrl+S)"
       >
         <Save size={12} />
@@ -176,7 +183,7 @@ export default function TopBar() {
 
       {/* Compression indicator */}
       {adminSettings.compress_images && (
-        <div className="text-[10px] text-[#fab387] bg-[#fab38720] px-2 py-0.5 rounded">
+        <div className="text-[10px] text-[#fb923c] bg-[#fb923c1a] px-2 py-0.5 rounded">
           Compress ON ({adminSettings.compress_width}px)
         </div>
       )}
@@ -185,7 +192,7 @@ export default function TopBar() {
       {isAdmin && (
         <button
           onClick={() => setShowAdmin(true)}
-          className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#cdd6f4] hover:bg-[#313145] transition-colors"
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#f1f5f9] hover:bg-[#334155] transition-colors"
           title="Admin panel"
         >
           <Settings size={12} />
@@ -196,20 +203,20 @@ export default function TopBar() {
       <div className="relative">
         {user ? (
           <button
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] text-[#cdd6f4] hover:bg-[#313145] transition-colors"
+            className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] text-[#f1f5f9] hover:bg-[#334155] transition-colors"
             onClick={() => setShowUserMenu((v) => !v)}
           >
-            <div className="w-5 h-5 rounded-full bg-[#89b4fa] flex items-center justify-center text-[#1e1e2e] text-[9px] font-bold">
+            <div className="w-5 h-5 rounded-full bg-[#14b8a6] flex items-center justify-center text-[#0f172a] text-[9px] font-bold">
               {user.display_name?.[0]?.toUpperCase() ?? 'U'}
             </div>
             <span className="max-w-[80px] truncate">{user.display_name}</span>
             <span
               className="text-[8px] px-1 py-0.5 rounded"
               style={{
-                background: user.user_type === 'admin' ? '#f38ba820' :
-                  user.user_type === 'member' ? '#a6e3a120' : '#6c708640',
-                color: user.user_type === 'admin' ? '#f38ba8' :
-                  user.user_type === 'member' ? '#a6e3a1' : '#6c7086',
+                background: user.user_type === 'admin' ? 'rgba(248,113,113,0.12)' :
+                  user.user_type === 'member' ? 'rgba(74,222,128,0.12)' : 'rgba(100,116,139,0.25)',
+                color: user.user_type === 'admin' ? '#f87171' :
+                  user.user_type === 'member' ? '#4ade80' : '#64748b',
               }}
             >
               {user.user_type}
@@ -219,7 +226,7 @@ export default function TopBar() {
         ) : (
           <button
             onClick={() => setShowAuth(true)}
-            className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#cdd6f4] hover:bg-[#313145] transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-[#f1f5f9] hover:bg-[#334155] transition-colors"
           >
             <LogIn size={12} />
             <span>Sign In</span>
@@ -228,29 +235,29 @@ export default function TopBar() {
 
         {showUserMenu && user && (
           <div
-            className="absolute right-0 top-full mt-1 w-44 bg-[#2a2a3e] border border-[#3a3a4e] rounded-lg shadow-xl z-50 py-1"
+            className="absolute right-0 top-full mt-1 w-44 bg-[#1e293b] border border-[#334155] rounded-lg shadow-xl z-50 py-1"
             onMouseLeave={() => setShowUserMenu(false)}
           >
-            <div className="px-3 py-2 border-b border-[#3a3a4e]">
-              <p className="text-xs font-medium text-[#cdd6f4] truncate">{user.email}</p>
-              <p className="text-[10px] text-[#6c7086] capitalize">{user.user_type} account</p>
+            <div className="px-3 py-2 border-b border-[#334155]">
+              <p className="text-xs font-medium text-[#f1f5f9] truncate">{user.email}</p>
+              <p className="text-[10px] text-[#64748b] capitalize">{user.user_type} account</p>
             </div>
             {isAdmin && (
               <button
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#cdd6f4] hover:bg-[#313145] text-left"
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f1f5f9] hover:bg-[#334155] text-left"
                 onClick={() => { setShowAdmin(true); setShowUserMenu(false); }}
               >
                 <Settings size={11} /> Admin Panel
               </button>
             )}
             <button
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#cdd6f4] hover:bg-[#313145] text-left"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f1f5f9] hover:bg-[#334155] text-left"
               onClick={() => { setShowChangePw(true); setShowUserMenu(false); }}
             >
               <KeyRound size={11} /> Change Password
             </button>
             <button
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f38ba8] hover:bg-[#313145] text-left"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f87171] hover:bg-[#334155] text-left"
               onClick={handleSignOut}
             >
               <LogOut size={11} /> Sign Out
@@ -282,8 +289,8 @@ function ToolButton({
       title={title}
       className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] transition-colors ${
         active
-          ? 'bg-[#89b4fa] text-[#1e1e2e] font-semibold'
-          : 'text-[#cdd6f4] hover:bg-[#313145]'
+          ? 'bg-[#14b8a6] text-[#0f172a] font-semibold'
+          : 'text-[#f1f5f9] hover:bg-[#334155]'
       }`}
     >
       {children}

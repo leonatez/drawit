@@ -63,13 +63,13 @@ export default function AdminPanel() {
         onClick={() => setShowAdmin(false)}
       >
         <div
-          className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-2xl p-8 shadow-2xl text-center"
+          className="bg-[#1e293b] border border-[#334155] rounded-2xl p-8 shadow-2xl text-center"
           onClick={(e) => e.stopPropagation()}
         >
-          <p className="text-[#cdd6f4] text-sm mb-4">You must be signed in as an admin to access this panel.</p>
+          <p className="text-[#f1f5f9] text-sm mb-4">You must be signed in as an admin to access this panel.</p>
           <button
             onClick={() => setShowAdmin(false)}
-            className="bg-[#89b4fa] text-[#1e1e2e] rounded-lg px-4 py-2 text-sm font-bold"
+            className="bg-[#14b8a6] text-[#0f172a] rounded-lg px-4 py-2 text-sm font-bold"
           >
             Close
           </button>
@@ -84,28 +84,28 @@ export default function AdminPanel() {
       onClick={() => setShowAdmin(false)}
     >
       <div
-        className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-2xl w-2xl max-w-[90vw] shadow-2xl flex flex-col max-h-[80vh]"
+        className="bg-[#1e293b] border border-[#334155] rounded-2xl w-2xl max-w-[90vw] shadow-2xl flex flex-col max-h-[80vh]"
         style={{ width: 600 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#3a3a4e] flex-shrink-0">
-          <h2 className="text-sm font-bold text-[#cdd6f4]">Admin Panel</h2>
-          <button onClick={() => setShowAdmin(false)} className="text-[#6c7086] hover:text-[#cdd6f4]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#334155] flex-shrink-0">
+          <h2 className="text-sm font-bold text-[#f1f5f9]">Admin Panel</h2>
+          <button onClick={() => setShowAdmin(false)} className="text-[#64748b] hover:text-[#f1f5f9]">
             <X size={16} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#3a3a4e] flex-shrink-0">
+        <div className="flex border-b border-[#334155] flex-shrink-0">
           {([['settings', 'Settings', Settings], ['users', 'Users', Users]] as const).map(([key, label, Icon]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-5 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 tab === key
-                  ? 'border-[#89b4fa] text-[#89b4fa]'
-                  : 'border-transparent text-[#6c7086] hover:text-[#cdd6f4]'
+                  ? 'border-[#14b8a6] text-[#14b8a6]'
+                  : 'border-transparent text-[#64748b] hover:text-[#f1f5f9]'
               }`}
             >
               <Icon size={12} />
@@ -119,13 +119,13 @@ export default function AdminPanel() {
           {tab === 'settings' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-xs font-semibold text-[#cdd6f4] mb-3">Image Compression</h3>
+                <h3 className="text-xs font-semibold text-[#f1f5f9] mb-3">Image Compression</h3>
 
                 <label className="flex items-center gap-3 cursor-pointer mb-4">
                   <div
                     onClick={() => setLocalSettings((s) => ({ ...s, compress_images: !s.compress_images }))}
                     className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${
-                      localSettings.compress_images ? 'bg-[#89b4fa]' : 'bg-[#3a3a4e]'
+                      localSettings.compress_images ? 'bg-[#14b8a6]' : 'bg-[#334155]'
                     }`}
                   >
                     <div
@@ -135,16 +135,16 @@ export default function AdminPanel() {
                     />
                   </div>
                   <div>
-                    <p className="text-xs text-[#cdd6f4] font-medium">Compress uploaded images</p>
-                    <p className="text-[10px] text-[#6c7086]">
+                    <p className="text-xs text-[#f1f5f9] font-medium">Compress uploaded images</p>
+                    <p className="text-[10px] text-[#64748b]">
                       Resize uploads exceeding the max width to save storage
                     </p>
                   </div>
                 </label>
 
                 {localSettings.compress_images && (
-                  <div className="ml-0 bg-[#1e1e2e] rounded-lg p-4">
-                    <label className="text-xs text-[#6c7086] block mb-1">Max width (px)</label>
+                  <div className="ml-0 bg-[#0f172a] rounded-lg p-4">
+                    <label className="text-xs text-[#64748b] block mb-1">Max width (px)</label>
                     <input
                       type="number"
                       value={localSettings.compress_width}
@@ -153,9 +153,9 @@ export default function AdminPanel() {
                       }
                       min={100}
                       max={4096}
-                      className="w-32 bg-[#2a2a3e] text-[#cdd6f4] border border-[#3a3a4e] rounded px-2 py-1 text-sm outline-none focus:border-[#89b4fa]"
+                      className="w-32 bg-[#1e293b] text-[#f1f5f9] border border-[#334155] rounded px-2 py-1 text-sm outline-none focus:border-[#14b8a6]"
                     />
-                    <p className="text-[10px] text-[#6c7086] mt-1">
+                    <p className="text-[10px] text-[#64748b] mt-1">
                       Images wider than this will be scaled down proportionally.
                       <br />Users can still request AI upscaling on export.
                     </p>
@@ -165,7 +165,7 @@ export default function AdminPanel() {
 
               <button
                 onClick={saveSettings}
-                className="flex items-center gap-2 bg-[#89b4fa] text-[#1e1e2e] px-4 py-2 rounded-lg text-sm font-bold"
+                className="flex items-center gap-2 bg-[#14b8a6] text-[#0f172a] px-4 py-2 rounded-lg text-sm font-bold"
               >
                 <Save size={13} /> Save Settings
               </button>
@@ -175,25 +175,25 @@ export default function AdminPanel() {
           {tab === 'users' && (
             <div>
               {loadingUsers ? (
-                <p className="text-xs text-[#6c7086]">Loading users…</p>
+                <p className="text-xs text-[#64748b]">Loading users…</p>
               ) : (
                 <div className="space-y-1">
                   {users.map((u) => (
                     <div
                       key={u.id}
-                      className="flex items-center gap-3 bg-[#1e1e2e] rounded-lg px-3 py-2"
+                      className="flex items-center gap-3 bg-[#0f172a] rounded-lg px-3 py-2"
                     >
-                      <div className="w-7 h-7 rounded-full bg-[#89b4fa]/20 flex items-center justify-center text-[10px] font-bold text-[#89b4fa]">
+                      <div className="w-7 h-7 rounded-full bg-[#14b8a6]/20 flex items-center justify-center text-[10px] font-bold text-[#14b8a6]">
                         {u.display_name?.[0]?.toUpperCase() ?? '?'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-[#cdd6f4] truncate">{u.display_name}</p>
-                        <p className="text-[10px] text-[#6c7086] truncate">{u.email}</p>
+                        <p className="text-xs font-medium text-[#f1f5f9] truncate">{u.display_name}</p>
+                        <p className="text-[10px] text-[#64748b] truncate">{u.email}</p>
                       </div>
                       <select
                         value={u.user_type}
                         onChange={(e) => updateUserType(u.id, e.target.value as UserType)}
-                        className="bg-[#2a2a3e] text-[#cdd6f4] border border-[#3a3a4e] rounded px-2 py-1 text-[11px] outline-none focus:border-[#89b4fa]"
+                        className="bg-[#1e293b] text-[#f1f5f9] border border-[#334155] rounded px-2 py-1 text-[11px] outline-none focus:border-[#14b8a6]"
                       >
                         <option value="guest">Guest</option>
                         <option value="member">Member</option>
@@ -202,7 +202,7 @@ export default function AdminPanel() {
                     </div>
                   ))}
                   {users.length === 0 && (
-                    <p className="text-xs text-[#6c7086] text-center py-4">No users yet</p>
+                    <p className="text-xs text-[#64748b] text-center py-4">No users yet</p>
                   )}
                 </div>
               )}

@@ -17,8 +17,8 @@ import ProjectsModal from '@/components/projects/ProjectsModal';
 const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center bg-[#1e1e2e]">
-      <div className="text-[#6c7086]">Loading canvas…</div>
+    <div className="flex-1 flex items-center justify-center bg-[#0f172a]">
+      <div className="text-[#64748b]">Loading canvas…</div>
     </div>
   ),
 });
@@ -160,12 +160,12 @@ export default function HomePage() {
   }, [markClean]);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#1e1e2e]">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0f172a]">
       <TopBar />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left sidebar */}
-        <div className="flex flex-col w-56 border-r border-[#3a3a4e] bg-[#2a2a3e] flex-shrink-0">
+        <div className="flex flex-col w-56 border-r border-[#334155] bg-[#1e293b] flex-shrink-0">
           <LayersPanel />
           <HistoryPanel />
         </div>
@@ -176,7 +176,7 @@ export default function HomePage() {
         </div>
 
         {/* Right: Chat */}
-        <div className="w-80 border-l border-[#3a3a4e] flex-shrink-0 flex flex-col">
+        <div className="w-80 border-l border-[#334155] flex-shrink-0 flex flex-col">
           <ChatPanel />
         </div>
       </div>

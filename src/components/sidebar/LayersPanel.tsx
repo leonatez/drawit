@@ -15,14 +15,14 @@ export default function LayersPanel() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <div className="px-3 py-2 border-b border-[#3a3a4e] flex items-center gap-2 flex-shrink-0">
-        <Layers size={13} className="text-[#89b4fa]" />
-        <span className="text-xs font-semibold text-[#cdd6f4]">Layers</span>
+      <div className="px-3 py-2 border-b border-[#334155] flex items-center gap-2 flex-shrink-0">
+        <Layers size={13} className="text-[#14b8a6]" />
+        <span className="text-xs font-semibold text-[#f1f5f9]">Layers</span>
       </div>
 
       <div className="overflow-y-auto flex-1 p-1">
         {pictures.length === 0 && (
-          <p className="text-[10px] text-[#6c7086] text-center mt-4 px-2">
+          <p className="text-[10px] text-[#64748b] text-center mt-4 px-2">
             Drop images onto the canvas to get started
           </p>
         )}
@@ -36,11 +36,11 @@ export default function LayersPanel() {
               {/* Picture row */}
               <div
                 className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md cursor-pointer group transition-colors ${
-                  isSelected ? 'bg-[#89b4fa]/15 text-[#cdd6f4]' : 'hover:bg-[#313145] text-[#cdd6f4]'
+                  isSelected ? 'bg-[#14b8a6]/15 text-[#f1f5f9]' : 'hover:bg-[#334155] text-[#f1f5f9]'
                 }`}
                 onClick={() => selectPicture(pic.id)}
               >
-                <ImageIcon size={11} className="text-[#89b4fa] flex-shrink-0" />
+                <ImageIcon size={11} className="text-[#14b8a6] flex-shrink-0" />
                 <span
                   className="flex-1 text-[11px] truncate font-medium"
                   title={pic.name}
@@ -56,7 +56,7 @@ export default function LayersPanel() {
                   {pic.name}
                 </span>
                 <button
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f38ba8] hover:text-[#f38ba8]"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f87171] hover:text-[#f87171]"
                   onClick={(e) => { e.stopPropagation(); removePicture(pic.id); }}
                   title="Delete picture"
                 >
@@ -71,7 +71,7 @@ export default function LayersPanel() {
                   <div
                     key={box.id}
                     className={`flex items-center gap-1.5 px-2 py-1 ml-3 rounded-md cursor-pointer group transition-colors ${
-                      isBoxSelected ? 'bg-[#89b4fa]/10' : 'hover:bg-[#313145]'
+                      isBoxSelected ? 'bg-[#14b8a6]/10' : 'hover:bg-[#334155]'
                     }`}
                     onClick={() => selectBox(box.id)}
                   >
@@ -79,11 +79,11 @@ export default function LayersPanel() {
                       className="w-2.5 h-2.5 rounded-sm flex-shrink-0 border"
                       style={{ background: `${box.color}40`, borderColor: box.color }}
                     />
-                    <span className="flex-1 text-[10px] text-[#cdd6f4] font-mono truncate">
+                    <span className="flex-1 text-[10px] text-[#f1f5f9] font-mono truncate">
                       @{box.label}
                     </span>
                     <button
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f38ba8]"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f87171]"
                       onClick={(e) => { e.stopPropagation(); removeSelectionBox(box.id); }}
                       title="Delete box"
                     >

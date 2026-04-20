@@ -86,7 +86,7 @@ export async function editImage(input: EditImageInput): Promise<EditImageResult>
       }
       const labels = boxMentionsForPic.map(m => `@${m.box!.label}`).join(', ');
       contextLines.push(
-        `Image ${imageIndex} (${isTarget ? 'PRIMARY – edit this' : 'reference'}): shows highlighted regions ${labels}.`,
+        `Image ${imageIndex} (${isTarget ? 'PRIMARY – edit this' : 'reference'}): the boxed regions ${labels} indicate where to apply the edit.`,
       );
     } else {
       contextLines.push(
@@ -105,7 +105,7 @@ export async function editImage(input: EditImageInput): Promise<EditImageResult>
     if (m.type === 'box') {
       translatedPrompt = translatedPrompt.replace(
         `@${m.label}`,
-        `the highlighted region @${m.label} in Image ${idx}`,
+        `the boxed region @${m.label} in Image ${idx}`,
       );
     } else {
       translatedPrompt = translatedPrompt.replace(
@@ -119,7 +119,7 @@ export async function editImage(input: EditImageInput): Promise<EditImageResult>
   contextLines.push(`Instruction: ${translatedPrompt}`);
   contextLines.push('');
   contextLines.push(
-    'IMPORTANT: Output ONLY the edited version of Image 1 (the primary image). Preserve all areas outside the mentioned regions exactly as they are. Output a complete, realistic image.',
+    'IMPORTANT: Output ONLY the edited version of Image 1 (the primary image). Preserve all areas outside the boxed regions exactly as they are — no darkening, no brightening, no vignette, no color grading. Output a complete, realistic image.',
   );
 
   parts.push({ text: contextLines.join('\n') });

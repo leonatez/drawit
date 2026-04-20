@@ -81,17 +81,17 @@ export default function ContextMenuOverlay() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-2">
-          <p className="text-xs text-[#6c7086] mb-1">Rename picture</p>
+          <p className="text-xs text-[#64748b] mb-1">Rename picture</p>
           <input
             autoFocus
             value={renameValue}
             onChange={(e) => setRenameValue(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') submitRename(); if (e.key === 'Escape') setRenaming(false); }}
-            className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded px-2 py-1 text-sm outline-none focus:border-[#89b4fa]"
+            className="w-full bg-[#0f172a] text-[#f1f5f9] border border-[#334155] rounded px-2 py-1 text-sm outline-none focus:border-[#14b8a6]"
           />
           <div className="flex gap-1 mt-2">
-            <button onClick={submitRename} className="flex-1 bg-[#89b4fa] text-[#1e1e2e] rounded px-2 py-1 text-xs font-bold">OK</button>
-            <button onClick={() => setRenaming(false)} className="flex-1 bg-[#3a3a4e] text-[#cdd6f4] rounded px-2 py-1 text-xs">Cancel</button>
+            <button onClick={submitRename} className="flex-1 bg-[#14b8a6] text-[#0f172a] rounded px-2 py-1 text-xs font-bold">OK</button>
+            <button onClick={() => setRenaming(false)} className="flex-1 bg-[#334155] text-[#f1f5f9] rounded px-2 py-1 text-xs">Cancel</button>
           </div>
         </div>
       </div>
@@ -169,18 +169,18 @@ function ExportDialog({ picture, onClose }: { picture: { id: string; name: strin
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-[#2a2a3e] border border-[#3a3a4e] rounded-xl p-6 w-80 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 w-80 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-[#cdd6f4]">Export "{picture.name}"</h2>
-          <button onClick={onClose}><X size={14} className="text-[#6c7086]" /></button>
+          <h2 className="text-sm font-semibold text-[#f1f5f9]">Export "{picture.name}"</h2>
+          <button onClick={onClose}><X size={14} className="text-[#64748b]" /></button>
         </div>
 
         {isCompressed ? (
           <>
-            <p className="text-xs text-[#6c7086] mb-4">Image was compressed. Choose download option:</p>
+            <p className="text-xs text-[#64748b] mb-4">Image was compressed. Choose download option:</p>
             <div className="space-y-2 mb-4">
               {(['current', 'upscale'] as const).map((m) => (
-                <label key={m} className="flex items-center gap-2 cursor-pointer text-sm text-[#cdd6f4]">
+                <label key={m} className="flex items-center gap-2 cursor-pointer text-sm text-[#f1f5f9]">
                   <input type="radio" name="mode" value={m} checked={mode === m} onChange={() => setMode(m)} />
                   {m === 'current' ? 'Download current (compressed) size' : 'Upscale with AI'}
                 </label>
@@ -188,32 +188,32 @@ function ExportDialog({ picture, onClose }: { picture: { id: string; name: strin
             </div>
             {mode === 'upscale' && (
               <div className="mb-4">
-                <label className="text-xs text-[#6c7086] block mb-1">Target width (px)</label>
+                <label className="text-xs text-[#64748b] block mb-1">Target width (px)</label>
                 <input
                   type="number"
                   value={upscaleWidth}
                   onChange={(e) => setUpscaleWidth(Number(e.target.value))}
                   min={100}
                   max={4096}
-                  className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#3a3a4e] rounded px-2 py-1 text-sm outline-none focus:border-[#89b4fa]"
+                  className="w-full bg-[#0f172a] text-[#f1f5f9] border border-[#334155] rounded px-2 py-1 text-sm outline-none focus:border-[#14b8a6]"
                 />
-                <p className="text-xs text-[#6c7086] mt-1">Height will scale proportionally</p>
+                <p className="text-xs text-[#64748b] mt-1">Height will scale proportionally</p>
               </div>
             )}
             <button
               onClick={mode === 'current' ? downloadCurrent : downloadUpscaled}
               disabled={loading}
-              className="w-full bg-[#89b4fa] text-[#1e1e2e] rounded-lg py-2 text-sm font-bold disabled:opacity-50"
+              className="w-full bg-[#14b8a6] text-[#0f172a] rounded-lg py-2 text-sm font-bold disabled:opacity-50"
             >
               {loading ? 'Upscaling…' : 'Download'}
             </button>
           </>
         ) : (
           <>
-            <p className="text-xs text-[#6c7086] mb-4">Download the picture in its current quality.</p>
+            <p className="text-xs text-[#64748b] mb-4">Download the picture in its current quality.</p>
             <button
               onClick={downloadCurrent}
-              className="w-full bg-[#89b4fa] text-[#1e1e2e] rounded-lg py-2 text-sm font-bold"
+              className="w-full bg-[#14b8a6] text-[#0f172a] rounded-lg py-2 text-sm font-bold"
             >
               Download PNG
             </button>
