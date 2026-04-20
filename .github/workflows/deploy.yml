@@ -21,49 +21,43 @@ jobs:
             .
           echo "Tarball size: $(du -sh /tmp/deploy.tar.gz | cut -f1)"
 
-      - name: Login to CapRover
-        id: login
+      - name: Login and deploy
         run: |
-          RESPONSE=$(curl -s -X POST "${{ secrets.CAPROVER_SERVER }}/api/v2/login" \
+          TOKEN=$(curl -s -X POST "${{ secrets.CAPROVER_SERVER }}/api/v2/login" \
             -H "Content-Type: application/json" \
-            -d "{\"password\": \"${{ secrets.CAPROVER_PASSWORD }}\"}")
-          echo "Login response: $RESPONSE"
-          TOKEN=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['token'])")
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
-          echo "Token obtained: ${TOKEN:0:10}..."
+            -d "{\"password\": \"${{ secrets.CAPROVER_PASSWORD }}\"}" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['token'])")
 
-      - name: Upload and deploy
-        run: |
-          echo "Uploading to ${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}"
-          RESPONSE=$(curl -s -X POST \
+          if [ -z "$TOKEN" ]; then
+            echo "Failed to get CapRover token"
+            exit 1
+          fi
+          echo "Login successful"
+
+          RESULT=$(curl -s -X POST \
             "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
-            -H "x-captain-auth: ${{ steps.login.outputs.token }}" \
-            -F "sourceFile=@/tmp/deploy.tar.gz" \
-            --max-time 60)
-          echo "Upload response: $RESPONSE"
-          echo "$RESPONSE" | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-if d.get('status') == 100:
-    print('Upload accepted by CapRover')
-else:
-    print('Upload failed:', d)
-    sys.exit(1)
-"
+            -H "x-captain-auth: $TOKEN" \
+            -F "sourceFile=@/tmp/deploy.tar.gz")
+          echo "Upload result: $RESULT"
+          echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0) if d.get('status')==100 else exit(1)"
 
-      - name: Wait for build
-        run: |
-          TOKEN="${{ steps.login.outputs.token }}"
           for i in $(seq 1 36); do
-            RESPONSE=$(curl -s "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
-              -H "x-captain-auth: $TOKEN")
-            BUILDING=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['isAppBuilding'])")
-            echo "[$i/36] Building: $BUILDING"
+            BUILDING=$(curl -s \
+              "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
+              -H "x-captain-auth: $TOKEN" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['isAppBuilding'])")
+            echo "[$i] Building: $BUILDING"
             [ "$BUILDING" = "False" ] && break
             sleep 10
           done
-          FAILED=$(curl -s "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
+
+          FAILED=$(curl -s \
+            "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
             -H "x-captain-auth: $TOKEN" \
             | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['isBuildFailed'])")
-          [ "$FAILED" = "True" ] && echo "Build failed!" && exit 1
+
+          if [ "$FAILED" = "True" ]; then
+            echo "Build failed!"
+            exit 1
+          fi
           echo "Deploy successful!"
