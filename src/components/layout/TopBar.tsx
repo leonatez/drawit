@@ -103,7 +103,7 @@ export default function TopBar() {
           <path d="M18 32 L18.7 34 L20.7 34.7 L18.7 35.4 L18 37.4 L17.3 35.4 L15.3 34.7 L17.3 34 Z" fill="#14b8a6"/>
         </svg>
         <span className="text-sm font-bold text-[#f1f5f9]">draw<span className="text-[#14b8a6]">it</span></span>
-        <span className="text-[9px] text-[#64748b] font-mono">v0.5</span>
+        <span className="text-[9px] text-[#64748b] font-mono">v0.6</span>
       </div>
 
       {/* Projects switcher */}
