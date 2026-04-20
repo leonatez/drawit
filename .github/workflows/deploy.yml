@@ -10,9 +10,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to CapRover
-        uses: caprover/deploy-to-caprover@v1
-        with:
-          server: ${{ secrets.CAPROVER_SERVER }}
-          app: ${{ secrets.CAPROVER_APP_NAME }}
-          token: ${{ secrets.CAPROVER_APP_TOKEN }}
+      - name: Create tarball
+        run: |
+          tar -czf /tmp/deploy.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='data' \
+            --exclude='.next' \
+            --exclude='logs' \
+            .
+
+      - name: Login to CapRover
+        id: login
+        run: |
+          TOKEN=$(curl -sf -X POST "${{ secrets.CAPROVER_SERVER }}/api/v2/login" \
+            -H "Content-Type: application/json" \
+            -d "{\"password\": \"${{ secrets.CAPROVER_PASSWORD }}\"}" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['token'])")
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Upload and deploy
+        run: |
+          curl -sf -X POST "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
+            -H "x-captain-auth: ${{ steps.login.outputs.token }}" \
+            -F "sourceFile=@/tmp/deploy.tar.gz"
+
+      - name: Wait for build
+        run: |
+          TOKEN="${{ steps.login.outputs.token }}"
+          for i in $(seq 1 36); do
+            BUILDING=$(curl -sf "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
+              -H "x-captain-auth: $TOKEN" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['isAppBuilding'])")
+            echo "Building: $BUILDING"
+            [ "$BUILDING" = "False" ] && break
+            sleep 10
+          done
+          FAILED=$(curl -sf "${{ secrets.CAPROVER_SERVER }}/api/v2/user/apps/appData/${{ secrets.CAPROVER_APP_NAME }}" \
+            -H "x-captain-auth: $TOKEN" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['isBuildFailed'])")
+          [ "$FAILED" = "True" ] && echo "Build failed!" && exit 1
+          echo "Deploy successful!"
