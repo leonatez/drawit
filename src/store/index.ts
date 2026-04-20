@@ -48,7 +48,9 @@ interface EditorStore {
   showAuth: boolean;
   showAdmin: boolean;
   showProjects: boolean;
+  showChangePw: boolean;
   isAiLoading: boolean;
+  limitExceeded: { limitType: 'daily' | 'monthly'; limit: number; used: number; tier: string } | null;
 
   // ── Undo ──────────────────────────────────────────────────────────────────
   undoStack: UndoEntry[];
@@ -95,7 +97,9 @@ interface EditorStore {
   setShowAuth: (v: boolean) => void;
   setShowAdmin: (v: boolean) => void;
   setShowProjects: (v: boolean) => void;
+  setShowChangePw: (v: boolean) => void;
   setAiLoading: (v: boolean) => void;
+  setLimitExceeded: (v: EditorStore['limitExceeded']) => void;
 
   // Undo
   pushUndo: (entry: UndoEntry) => void;
@@ -133,7 +137,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   showAuth: false,
   showAdmin: false,
   showProjects: false,
+  showChangePw: false,
   isAiLoading: false,
+  limitExceeded: null,
 
   undoStack: [],
 
@@ -299,7 +305,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   setShowAuth: (v) => set({ showAuth: v }),
   setShowAdmin: (v) => set({ showAdmin: v }),
   setShowProjects: (v) => set({ showProjects: v }),
+  setShowChangePw: (v) => set({ showChangePw: v }),
   setAiLoading: (v) => set({ isAiLoading: v }),
+  setLimitExceeded: (v) => set({ limitExceeded: v }),
 
   // ── Undo ───────────────────────────────────────────────────────────────────
   pushUndo: (entry) =>

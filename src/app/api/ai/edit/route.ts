@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { editImage } from '@/lib/ai/gemini';
 import { readPictureBase64, savePictureFile, loadProject, saveProject, saveVersionSnapshot } from '@/lib/storage';
 import { parseMentions } from '@/lib/utils';
-import { requireMember } from '@/lib/auth-guard';
+import { requireMember, checkAndIncrementUsage } from '@/lib/auth-guard';
 import { nanoid } from 'nanoid';
 import type { EditRequest, ResolvedMention } from '@/types';
 
 export async function POST(req: NextRequest) {
   const guard = await requireMember();
   if (!guard.ok) return guard.response;
+
+  const usage = await checkAndIncrementUsage(guard.userId, guard.userType);
+  if (!usage.ok) return usage.response;
 
   const body: EditRequest = await req.json();
   const { projectId, prompt, mentions } = body;

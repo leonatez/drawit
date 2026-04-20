@@ -5,7 +5,6 @@ import {
   MousePointer2, Square, Upload, Settings, LogOut,
   LogIn, Save, ChevronDown, FolderOpen, KeyRound,
 } from 'lucide-react';
-import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import { useEditorStore } from '@/store';
 import { sceneSerializerRef } from '@/lib/scene-ref';
 import { createClient } from '@/lib/supabase/client';
@@ -13,13 +12,12 @@ import toast from 'react-hot-toast';
 
 export default function TopBar() {
   const {
-    tool, setTool, user, setShowAuth, setShowAdmin, setShowProjects,
+    tool, setTool, user, setShowAuth, setShowAdmin, setShowProjects, setShowChangePw,
     projectName, setProjectName, isDirty, toProject,
     markClean, adminSettings,
   } = useEditorStore();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showChangePw, setShowChangePw] = useState(false);
 
   const isAdmin = user?.user_type === 'admin';
 
@@ -214,8 +212,10 @@ export default function TopBar() {
               className="text-[8px] px-1 py-0.5 rounded"
               style={{
                 background: user.user_type === 'admin' ? 'rgba(248,113,113,0.12)' :
+                  user.user_type === 'premium' ? 'rgba(251,146,60,0.12)' :
                   user.user_type === 'member' ? 'rgba(74,222,128,0.12)' : 'rgba(100,116,139,0.25)',
                 color: user.user_type === 'admin' ? '#f87171' :
+                  user.user_type === 'premium' ? '#fb923c' :
                   user.user_type === 'member' ? '#4ade80' : '#64748b',
               }}
             >
@@ -266,9 +266,6 @@ export default function TopBar() {
         )}
       </div>
 
-      {showChangePw && (
-        <ChangePasswordModal onClose={() => setShowChangePw(false)} />
-      )}
     </div>
   );
 }

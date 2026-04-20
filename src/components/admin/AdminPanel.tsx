@@ -197,6 +197,7 @@ export default function AdminPanel() {
                       >
                         <option value="guest">Guest</option>
                         <option value="member">Member</option>
+                        <option value="premium">Premium</option>
                         <option value="admin">Admin</option>
                       </select>
                     </div>

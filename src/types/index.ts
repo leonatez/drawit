@@ -64,7 +64,14 @@ export interface Project {
 
 // ─── Auth / Users ────────────────────────────────────────────────────────────
 
-export type UserType = 'guest' | 'member' | 'admin';
+export type UserType = 'guest' | 'member' | 'premium' | 'admin';
+
+export const TIER_LIMITS: Record<string, { daily: number; monthly: number } | null> = {
+  guest:   null,
+  member:  { daily: 10,  monthly: 50  },
+  premium: { daily: 50,  monthly: 250 },
+  admin:   null, // unlimited
+};
 
 export interface UserProfile {
   id: string;

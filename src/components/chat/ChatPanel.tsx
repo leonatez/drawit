@@ -12,12 +12,12 @@ export default function ChatPanel() {
   const {
     chatMessages, user, pictures, selectionBoxes, projectId,
     isAiLoading, setAiLoading, addChatMessage, createVersion,
-    getPictureByName, getBoxByLabel, setShowAuth,
+    getPictureByName, getBoxByLabel, setShowAuth, setLimitExceeded,
   } = useEditorStore();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const isMember = user?.user_type === 'member' || user?.user_type === 'admin';
+  const isMember = user?.user_type === 'member' || user?.user_type === 'premium' || user?.user_type === 'admin';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -74,6 +74,10 @@ export default function ChatPanel() {
 
       const data = await res.json();
 
+      if (res.status === 429 && data.limitExceeded) {
+        setLimitExceeded({ limitType: data.limitType, limit: data.limit, used: data.used, tier: data.tier });
+        return;
+      }
       if (!res.ok) throw new Error(data.error || 'AI request failed');
 
       if (data.success && data.editedImages?.length > 0) {

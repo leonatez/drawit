@@ -5,9 +5,15 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT,
   display_name TEXT,
-  user_type TEXT NOT NULL DEFAULT 'guest' CHECK (user_type IN ('guest', 'member', 'admin')),
+  user_type TEXT NOT NULL DEFAULT 'guest' CHECK (user_type IN ('guest', 'member', 'premium', 'admin')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  -- AI usage tracking (reset automatically by server)
+  ai_daily_count         INTEGER  NOT NULL DEFAULT 0,
+  ai_daily_reset_date    DATE     NOT NULL DEFAULT CURRENT_DATE,
+  ai_monthly_count       INTEGER  NOT NULL DEFAULT 0,
+  ai_monthly_reset_month SMALLINT NOT NULL DEFAULT EXTRACT(MONTH FROM NOW())::SMALLINT,
+  ai_monthly_reset_year  SMALLINT NOT NULL DEFAULT EXTRACT(YEAR FROM NOW())::SMALLINT
 );
 
 -- admin_settings table (singleton row)

@@ -13,6 +13,8 @@ import HistoryPanel from '@/components/sidebar/HistoryPanel';
 import AuthModal from '@/components/auth/AuthModal';
 import AdminPanel from '@/components/admin/AdminPanel';
 import ProjectsModal from '@/components/projects/ProjectsModal';
+import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
+import LimitExceededModal from '@/components/auth/LimitExceededModal';
 
 const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
   ssr: false,
@@ -24,7 +26,7 @@ const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
 });
 
 export default function HomePage() {
-  const { setUser, showAuth, showAdmin, showProjects, projectId, toProject, markClean } = useEditorStore();
+  const { setUser, showAuth, showAdmin, showProjects, showChangePw, setShowChangePw, projectId, toProject, markClean } = useEditorStore();
 
   // ── Handle ?admin=1 query param ───────────────────────────────────────────
   useEffect(() => {
@@ -51,7 +53,11 @@ export default function HomePage() {
         .then(({ data }) => { if (data) setUser(data); });
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setShowChangePw(true);
+        return;
+      }
       if (!session?.user) { setUser(null); return; }
       const u = session.user;
       setUser({ id: u.id, email: u.email!, display_name: u.email!.split('@')[0], user_type: 'guest', created_at: '' });
@@ -184,6 +190,8 @@ export default function HomePage() {
       {showAuth && <AuthModal />}
       {showAdmin && <AdminPanel />}
       {showProjects && <ProjectsModal />}
+      {showChangePw && <ChangePasswordModal onClose={() => setShowChangePw(false)} />}
+      <LimitExceededModal />
     </div>
   );
 }
