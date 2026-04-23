@@ -1,15 +1,28 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Download, Trash2, Pencil, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Download, Trash2, Pencil, X, ChevronRight, Camera, Wand2, Scissors } from 'lucide-react';
 import { useEditorStore } from '@/store';
+import type { Picture } from '@/types';
 import toast from 'react-hot-toast';
 
+const VIEW_OPTIONS = [
+  { label: 'From above', prompt: 'Change the camera perspective to a top-down bird\'s eye view looking straight down at the subject. Keep all content and style the same.' },
+  { label: 'From below', prompt: 'Change the camera perspective to a worm\'s eye view looking straight up at the subject from below. Keep all content and style the same.' },
+  { label: 'From front', prompt: 'Change the camera perspective to a straight-on front view facing the subject directly. Keep all content and style the same.' },
+  { label: 'From behind', prompt: 'Change the camera perspective to a rear view looking at the back of the subject. Keep all content and style the same.' },
+  { label: 'From left', prompt: 'Change the camera perspective to a side view from the left of the subject. Keep all content and style the same.' },
+  { label: 'From right', prompt: 'Change the camera perspective to a side view from the right of the subject. Keep all content and style the same.' },
+  { label: 'From upper-left', prompt: 'Change the camera perspective to a three-quarter angle view from the upper-left of the subject. Keep all content and style the same.' },
+  { label: 'From upper-right', prompt: 'Change the camera perspective to a three-quarter angle view from the upper-right of the subject. Keep all content and style the same.' },
+];
+
 export default function ContextMenuOverlay() {
-  const { contextMenu, setContextMenu, pictures, selectionBoxes, removePicture, removeSelectionBox, renamePicture } = useEditorStore();
+  const { contextMenu, setContextMenu, pictures, selectionBoxes, removePicture, removeSelectionBox, renamePicture, addPicture, markDirty, projectId, isAiLoading, setAiLoading } = useEditorStore();
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showViewSubmenu, setShowViewSubmenu] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +76,116 @@ export default function ContextMenuOverlay() {
     setShowExportDialog(true);
   };
 
+  const handleVectorize = async () => {
+    if (!picture) return;
+    setContextMenu(null);
+    const toastId = toast.loading('Vectorizing…');
+    try {
+      const res = await fetch('/api/vectorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, pictureId: picture.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error || 'Vectorization failed', { id: toastId }); return; }
+
+      const newPic: Picture = {
+        id: data.pictureId,
+        projectId,
+        name: 'Vector',
+        filename: `${data.pictureId}.svg`,
+        storagePath: data.storagePath,
+        originalWidth: data.originalWidth,
+        originalHeight: data.originalHeight,
+        excalidrawFileId: data.pictureId,
+        canvasX: picture.canvasX + picture.canvasWidth + 24,
+        canvasY: picture.canvasY,
+        canvasWidth: picture.canvasWidth,
+        canvasHeight: picture.canvasHeight,
+        isVector: true,
+      };
+      addPicture(newPic);
+      markDirty();
+      toast.success('Vectorized!', { id: toastId });
+    } catch {
+      toast.error('Vectorization failed', { id: toastId });
+    }
+  };
+
+  const handleRemoveBg = async () => {
+    if (!picture) return;
+    setContextMenu(null);
+    const toastId = toast.loading('Removing background…');
+    try {
+      const res = await fetch('/api/remove-bg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, pictureId: picture.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error || 'Background removal failed', { id: toastId }); return; }
+
+      const newPic: Picture = {
+        id: data.pictureId,
+        projectId,
+        name: picture.name + ' (no bg)',
+        filename: `${data.pictureId}.png`,
+        storagePath: data.storagePath,
+        originalWidth: data.originalWidth,
+        originalHeight: data.originalHeight,
+        excalidrawFileId: data.pictureId,
+        canvasX: picture.canvasX + picture.canvasWidth + 24,
+        canvasY: picture.canvasY,
+        canvasWidth: picture.canvasWidth,
+        canvasHeight: picture.canvasHeight,
+      };
+      addPicture(newPic);
+      markDirty();
+      toast.success('Background removed!', { id: toastId });
+    } catch {
+      toast.error('Background removal failed', { id: toastId });
+    }
+  };
+
+  const handleDownloadSvg = () => {
+    if (!picture) return;
+    const url = `/api/picture/${picture.id}?path=${encodeURIComponent(picture.storagePath)}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${picture.name}.svg`;
+    a.click();
+    setContextMenu(null);
+  };
+
+  const handleChangeView = async (viewPrompt: string) => {
+    if (!picture) return;
+    if (isAiLoading) { toast('AI is busy, please wait'); return; }
+    setContextMenu(null);
+    setAiLoading(true);
+    try {
+      const res = await fetch('/api/ai/edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          prompt: viewPrompt,
+          mentions: [{ label: picture.name, type: 'picture', pictureId: picture.id }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        toast.error(data.message || 'View change failed');
+        return;
+      }
+      window.dispatchEvent(new CustomEvent('drawit:picture-updated'));
+      toast.success('View changed');
+    } catch {
+      toast.error('View change failed');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   if (showExportDialog && picture) {
     return (
       <ExportDialog
@@ -105,13 +228,48 @@ export default function ContextMenuOverlay() {
       style={{ left: contextMenu.x, top: contextMenu.y }}
       onClick={(e) => e.stopPropagation()}
     >
-      {isPicture && (
+      {isPicture && picture?.isVector && (
+        <>
+          <div className="ctx-item" onClick={handleRename}>
+            <Pencil size={13} /> Rename
+          </div>
+          <div className="ctx-item" onClick={handleDownloadSvg}>
+            <Download size={13} /> Download SVG
+          </div>
+          <div className="ctx-separator" />
+        </>
+      )}
+      {isPicture && !picture?.isVector && (
         <>
           <div className="ctx-item" onClick={handleRename}>
             <Pencil size={13} /> Rename
           </div>
           <div className="ctx-item" onClick={handleExport}>
             <Download size={13} /> Export
+          </div>
+          <div className="ctx-separator" />
+          <div
+            className="ctx-item relative"
+            onMouseEnter={() => setShowViewSubmenu(true)}
+            onMouseLeave={() => setShowViewSubmenu(false)}
+          >
+            <Camera size={13} /> Change view <ChevronRight size={11} className="ml-auto" />
+            {showViewSubmenu && (
+              <div className="ctx-submenu">
+                {VIEW_OPTIONS.map((v) => (
+                  <div key={v.label} className="ctx-item" onClick={() => handleChangeView(v.prompt)}>
+                    {v.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="ctx-separator" />
+          <div className="ctx-item" onClick={handleVectorize}>
+            <Wand2 size={13} /> Vectorize
+          </div>
+          <div className="ctx-item" onClick={handleRemoveBg}>
+            <Scissors size={13} /> Remove background
           </div>
           <div className="ctx-separator" />
         </>

@@ -79,6 +79,18 @@ export async function deletePictureFile(storagePath: string): Promise<void> {
   await fs.rm(storagePath, { force: true });
 }
 
+/** Save a vector SVG file and return its storage path */
+export async function saveVectorFile(
+  projectId: string,
+  pictureId: string,
+  svgContent: string,
+): Promise<string> {
+  await ensureDir(picturesDir(projectId));
+  const filepath = path.join(picturesDir(projectId), `${pictureId}.svg`);
+  await fs.writeFile(filepath, svgContent, 'utf-8');
+  return filepath;
+}
+
 // ─── Version snapshots ───────────────────────────────────────────────────────
 
 /** Save snapshot picture files for a version */
@@ -166,6 +178,11 @@ export async function deleteProject(projectId: string): Promise<void> {
 const defaultSettings: AdminSettings = {
   compress_images: false,
   compress_width: 500,
+  vec_n_colors: 12,
+  vec_min_area: 8,
+  vec_smoothing: 0.6,
+  rmbg_sat_thresh: 30,
+  rmbg_val_thresh: 220,
 };
 
 export async function loadAdminSettings(): Promise<AdminSettings> {

@@ -14,6 +14,8 @@ export interface Picture {
   canvasY: number;
   canvasWidth: number;
   canvasHeight: number;
+  // Derived picture flags
+  isVector?: boolean;        // true if this is a vectorized SVG picture
 }
 
 export interface SelectionBox {
@@ -86,6 +88,13 @@ export interface UserProfile {
 export interface AdminSettings {
   compress_images: boolean;
   compress_width: number;
+  // Vectorize thresholds
+  vec_n_colors: number;     // k-means color clusters (4–16)
+  vec_min_area: number;     // minimum contour area in px (1–50)
+  vec_smoothing: number;    // B-spline smoothing factor (0.1–2.0)
+  // Remove-background thresholds (HSV)
+  rmbg_sat_thresh: number;  // saturation ceiling for "white-like" pixel (10–80)
+  rmbg_val_thresh: number;  // value floor for "white-like" pixel (180–250)
 }
 
 // ─── API payloads ────────────────────────────────────────────────────────────

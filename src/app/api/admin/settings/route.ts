@@ -24,6 +24,11 @@ export async function PUT(req: NextRequest) {
   const updated = {
     compress_images: body.compress_images ?? settings.compress_images,
     compress_width: body.compress_width ?? settings.compress_width,
+    vec_n_colors: body.vec_n_colors ?? settings.vec_n_colors,
+    vec_min_area: body.vec_min_area ?? settings.vec_min_area,
+    vec_smoothing: body.vec_smoothing ?? settings.vec_smoothing,
+    rmbg_sat_thresh: body.rmbg_sat_thresh ?? settings.rmbg_sat_thresh,
+    rmbg_val_thresh: body.rmbg_val_thresh ?? settings.rmbg_val_thresh,
   };
   await saveAdminSettings(updated);
   return NextResponse.json({ ok: true, settings: updated });

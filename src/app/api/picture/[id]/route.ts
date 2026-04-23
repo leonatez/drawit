@@ -12,9 +12,10 @@ export async function GET(
 
   try {
     const buf = await readPictureFile(storagePath);
+    const isSvg = storagePath.endsWith('.svg');
     return new NextResponse(buf as unknown as BodyInit, {
       headers: {
-        'Content-Type': 'image/png',
+        'Content-Type': isSvg ? 'image/svg+xml' : 'image/png',
         'Cache-Control': 'no-cache',
       },
     });

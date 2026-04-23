@@ -6,6 +6,40 @@ import { useEditorStore } from '@/store';
 import type { UserProfile, UserType, AdminSettings } from '@/types';
 import toast from 'react-hot-toast';
 
+// ── Slider helper ────────────────────────────────────────────────────────────
+
+function SettingSlider({
+  label, hint, value, min, max, step, format, onChange,
+}: {
+  label: string;
+  hint: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format: (v: number) => string;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-[#f1f5f9] font-medium">{label}</span>
+        <span className="text-xs font-mono text-[#14b8a6] w-12 text-right">{format(value)}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-[#14b8a6]"
+      />
+      <p className="text-[10px] text-[#64748b] mt-0.5">{hint}</p>
+    </div>
+  );
+}
+
 export default function AdminPanel() {
   const { setShowAdmin, adminSettings, setAdminSettings, user } = useEditorStore();
   const [tab, setTab] = useState<'settings' | 'users'>('settings');
@@ -161,6 +195,60 @@ export default function AdminPanel() {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* ── Vectorize ── */}
+              <div>
+                <h3 className="text-xs font-semibold text-[#f1f5f9] mb-3">Vectorize</h3>
+                <div className="bg-[#0f172a] rounded-lg p-4 space-y-4">
+                  <SettingSlider
+                    label="Colors (k-means clusters)"
+                    hint="More colors = more detail preserved, slower"
+                    value={localSettings.vec_n_colors}
+                    min={4} max={20} step={1}
+                    format={(v) => String(v)}
+                    onChange={(v) => setLocalSettings((s) => ({ ...s, vec_n_colors: v }))}
+                  />
+                  <SettingSlider
+                    label="Min detail size (px)"
+                    hint="Shapes smaller than this are dropped. Lower = more detail"
+                    value={localSettings.vec_min_area}
+                    min={1} max={100} step={1}
+                    format={(v) => `${v} px`}
+                    onChange={(v) => setLocalSettings((s) => ({ ...s, vec_min_area: v }))}
+                  />
+                  <SettingSlider
+                    label="Edge smoothing"
+                    hint="Higher = smoother curves, less faithful to pixel edges"
+                    value={localSettings.vec_smoothing}
+                    min={0.1} max={3.0} step={0.1}
+                    format={(v) => v.toFixed(1)}
+                    onChange={(v) => setLocalSettings((s) => ({ ...s, vec_smoothing: v }))}
+                  />
+                </div>
+              </div>
+
+              {/* ── Remove Background ── */}
+              <div>
+                <h3 className="text-xs font-semibold text-[#f1f5f9] mb-3">Remove Background</h3>
+                <div className="bg-[#0f172a] rounded-lg p-4 space-y-4">
+                  <SettingSlider
+                    label="Saturation threshold"
+                    hint="Pixels with HSV saturation below this are treated as background. Lower = stricter (keeps more colors)"
+                    value={localSettings.rmbg_sat_thresh}
+                    min={5} max={80} step={1}
+                    format={(v) => String(v)}
+                    onChange={(v) => setLocalSettings((s) => ({ ...s, rmbg_sat_thresh: v }))}
+                  />
+                  <SettingSlider
+                    label="Brightness threshold"
+                    hint="Pixels with HSV brightness above this are treated as background. Higher = stricter (only removes near-pure white)"
+                    value={localSettings.rmbg_val_thresh}
+                    min={150} max={255} step={1}
+                    format={(v) => String(v)}
+                    onChange={(v) => setLocalSettings((s) => ({ ...s, rmbg_val_thresh: v }))}
+                  />
+                </div>
               </div>
 
               <button
