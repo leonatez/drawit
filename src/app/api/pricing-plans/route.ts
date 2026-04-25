@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createAdminSupabase } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const admin = createAdminSupabase();
   const { data: plans, error } = await admin

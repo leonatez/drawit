@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminSupabase } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 async function requireAdmin(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
