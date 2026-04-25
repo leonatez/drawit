@@ -28,12 +28,16 @@ const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
 export default function HomePage() {
   const { setUser, showAuth, showAdmin, showProjects, showChangePw, setShowChangePw, projectId, toProject, markClean } = useEditorStore();
 
-  // ── Handle ?admin=1 query param ───────────────────────────────────────────
+  // ── Handle URL query params ────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('admin') === '1') {
         useEditorStore.getState().setShowAdmin(true);
+      }
+      if (params.get('auth_error') === '1') {
+        toast.error('Sign-in failed. Please try again.');
+        window.history.replaceState({}, '', '/');
       }
     }
   }, []);
