@@ -57,7 +57,16 @@ export default function AuthModal() {
         toast.success('Signed in');
         setShowAuth(false);
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            // Explicitly set the redirect URL so confirmation emails always
+            // point to the live domain, not Supabase's configured Site URL
+            // (which may still be http://localhost:3000 from local dev setup).
+            emailRedirectTo: window.location.origin,
+          },
+        });
         if (error) throw error;
         toast.success('Account created! Check your email to confirm. An admin will upgrade your account to Member.');
         setShowAuth(false);
