@@ -10,6 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env.production for build-time baking
+        run: |
+          cat > .env.production << EOF
+          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+          EOF
+
       - name: Create tarball
         run: |
           tar -czf /tmp/deploy.tar.gz \
