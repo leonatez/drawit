@@ -81,6 +81,31 @@ export interface UserProfile {
   display_name: string;
   user_type: UserType;
   created_at: string;
+  subscription_expires_at?: string | null;
+}
+
+export interface PricingPlan {
+  id: string;
+  name: string;
+  description: string;
+  user_type: 'member' | 'premium';
+  price_vnd: number;
+  ai_daily_limit: number;
+  ai_monthly_limit: number;
+  active: boolean;
+  sort_order: number;
+}
+
+export interface PaymentOrder {
+  id: string;
+  user_id: string;
+  plan_id: string;
+  order_code: string;
+  amount_vnd: number;
+  status: 'pending' | 'paid' | 'expired' | 'cancelled';
+  created_at: string;
+  paid_at: string | null;
+  subscription_expires_at: string | null;
 }
 
 // ─── Admin settings ──────────────────────────────────────────────────────────

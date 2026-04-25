@@ -30,7 +30,7 @@ export async function requireMember(): Promise<AuthGuardResult> {
   const admin = createAdminSupabase();
   const { data: profile } = await admin
     .from('profiles')
-    .select('user_type')
+    .select('user_type, subscription_expires_at')
     .eq('id', user.id)
     .single();
 
@@ -39,10 +39,32 @@ export async function requireMember(): Promise<AuthGuardResult> {
     return {
       ok: false,
       response: NextResponse.json(
-        { error: 'Your account must be upgraded to Member by an admin before you can use AI features.' },
+        { error: 'Your account must be upgraded to Member before you can use AI features.' },
         { status: 403 },
       ),
     };
+  }
+
+  // Check subscription expiry for paid tiers (admins are exempt)
+  if (role !== 'admin' && profile?.subscription_expires_at) {
+    const expired = new Date(profile.subscription_expires_at) < new Date();
+    if (expired) {
+      // Lazily downgrade — best-effort, log failures
+      admin
+        .from('profiles')
+        .update({ user_type: 'guest', subscription_expires_at: null })
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) console.error('[auth-guard] Failed to downgrade expired subscription:', error.message);
+        });
+      return {
+        ok: false,
+        response: NextResponse.json(
+          { error: 'Your subscription has expired. Please renew to continue using AI features.' },
+          { status: 403 },
+        ),
+      };
+    }
   }
 
   return { ok: true, userId: user.id, userType: role };

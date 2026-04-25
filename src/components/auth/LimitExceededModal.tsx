@@ -6,7 +6,7 @@ import { useEditorStore } from '@/store';
 import { TIER_LIMITS } from '@/types';
 
 export default function LimitExceededModal() {
-  const { limitExceeded, setLimitExceeded } = useEditorStore();
+  const { limitExceeded, setLimitExceeded, setShowPayment } = useEditorStore();
   if (!limitExceeded) return null;
 
   const { limitType, limit, used, tier } = limitExceeded;
@@ -66,15 +66,18 @@ export default function LimitExceededModal() {
                 <p className="text-[10px] text-[#64748b]">requests / month</p>
               </div>
             </div>
-            <p className="text-[10px] text-[#64748b] mt-3 text-center">
-              Contact an admin to upgrade your account.
-            </p>
+            <button
+              onClick={() => { close(); setShowPayment(true); }}
+              className="w-full mt-3 bg-[#14b8a6] hover:bg-[#0d9488] text-[#0f172a] rounded-lg py-2 text-xs font-bold transition-colors"
+            >
+              Upgrade to {nextTier} →
+            </button>
           </div>
         )}
 
         <button
           onClick={close}
-          className="w-full bg-[#334155] hover:bg-[#475569] text-[#f1f5f9] rounded-lg py-2.5 text-sm font-medium transition-colors"
+          className="w-full bg-[#334155] hover:bg-[#475569] text-[#f1f5f9] rounded-lg py-2.5 text-sm font-medium transition-colors mt-3"
         >
           Got it
         </button>

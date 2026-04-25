@@ -88,3 +88,57 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ─── Payment system ───────────────────────────────────────────────────────────
+
+-- Add subscription expiry to profiles (idempotent)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS subscription_expires_at TIMESTAMPTZ;
+
+-- Pricing plans (managed via Supabase table editor)
+CREATE TABLE IF NOT EXISTS public.pricing_plans (
+  id          UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        TEXT    NOT NULL,
+  description TEXT,
+  user_type   TEXT    NOT NULL CHECK (user_type IN ('member', 'premium')),
+  price_vnd   INTEGER NOT NULL,
+  ai_daily_limit   INTEGER NOT NULL,
+  ai_monthly_limit INTEGER NOT NULL,
+  active      BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order  INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Seed plans (idempotent via unique name constraint)
+ALTER TABLE public.pricing_plans DROP CONSTRAINT IF EXISTS pricing_plans_name_key;
+ALTER TABLE public.pricing_plans ADD CONSTRAINT pricing_plans_name_key UNIQUE (name);
+
+INSERT INTO public.pricing_plans (name, description, user_type, price_vnd, ai_daily_limit, ai_monthly_limit, sort_order)
+VALUES
+  ('Member',  '10 AI requests/day · 50/month', 'member',  50000,  10, 50,  1),
+  ('Premium', '50 AI requests/day · 250/month', 'premium', 100000, 50, 250, 2)
+ON CONFLICT (name) DO NOTHING;
+
+-- Payment orders
+CREATE TABLE IF NOT EXISTS public.payment_orders (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  plan_id      UUID NOT NULL REFERENCES public.pricing_plans(id),
+  order_code   TEXT NOT NULL UNIQUE,
+  amount_vnd   INTEGER NOT NULL,
+  status       TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'expired', 'cancelled')),
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  paid_at      TIMESTAMPTZ,
+  subscription_expires_at TIMESTAMPTZ
+);
+
+-- RLS for pricing_plans: anyone can read active plans
+ALTER TABLE public.pricing_plans ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "pricing_plans_public_read" ON public.pricing_plans
+  FOR SELECT USING (active = TRUE);
+
+-- RLS for payment_orders: users read/insert their own
+ALTER TABLE public.payment_orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "orders_read_own" ON public.payment_orders
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "orders_insert_own" ON public.payment_orders
+  FOR INSERT WITH CHECK (auth.uid() = user_id);

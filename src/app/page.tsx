@@ -15,6 +15,7 @@ import AdminPanel from '@/components/admin/AdminPanel';
 import ProjectsModal from '@/components/projects/ProjectsModal';
 import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import LimitExceededModal from '@/components/auth/LimitExceededModal';
+import PaymentModal from '@/components/payment/payment-modal';
 
 const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
   ssr: false,
@@ -26,7 +27,7 @@ const CanvasEditor = dynamic(() => import('@/components/canvas/CanvasEditor'), {
 });
 
 export default function HomePage() {
-  const { setUser, showAuth, showAdmin, showProjects, showChangePw, setShowChangePw, projectId, toProject, markClean } = useEditorStore();
+  const { setUser, showAuth, showAdmin, showProjects, showChangePw, showPayment, setShowChangePw, projectId, toProject, markClean } = useEditorStore();
 
   // ── Handle URL query params ────────────────────────────────────────────────
   useEffect(() => {
@@ -196,6 +197,7 @@ export default function HomePage() {
       {showProjects && <ProjectsModal />}
       {showChangePw && <ChangePasswordModal onClose={() => setShowChangePw(false)} />}
       <LimitExceededModal />
+      {showPayment && <PaymentModal />}
     </div>
   );
 }
