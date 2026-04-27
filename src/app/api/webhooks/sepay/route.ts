@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 });
   }
 
-  const content = String(body.content ?? body.transferContent ?? '');
+  const content = String(body.content ?? body.transferContent ?? body.description ?? '');
   // Use only transferAmount — never fall back to body.amount to avoid zero-VND exploit
   const transferAmount = Number(body.transferAmount ?? 0);
 
