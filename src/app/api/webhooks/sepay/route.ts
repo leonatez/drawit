@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminSupabase } from '@/lib/supabase/server';
-import { verifyWebhookApiKey, addSubscriptionMonth } from '@/lib/payment/sepay-utils';
+import { verifyWebhookApiKey, extractOrderCode, addSubscriptionMonth } from '@/lib/payment/sepay-utils';
 
 export async function POST(request: NextRequest) {
   // Verify SePay API key
@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
-  const tokens = content.toUpperCase().split(/[^A-Z0-9]+/);
-  const matched = pendingOrders.find((o) => tokens.includes(o.order_code));
+  const matchedCode = extractOrderCode(content, pendingOrders.map((o) => o.order_code));
+  const matched = pendingOrders.find((o) => o.order_code === matchedCode);
 
   if (!matched) {
     return NextResponse.json({ success: true });

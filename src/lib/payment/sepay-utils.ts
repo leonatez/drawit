@@ -42,17 +42,12 @@ export function verifyWebhookApiKey(apiKey: string | null): boolean {
 
 /**
  * Extract the first matching order code from a transfer content string.
- * Tries case-insensitive match against the provided list of valid codes.
- */
-/**
- * Extract the first matching order code from a transfer content string.
- * Matches on word boundaries to avoid false positives from superstrings.
+ * Uses regex substring search so the code is found even when banks/wallets
+ * (e.g. MoMo) append extra text without a separator.
  */
 export function extractOrderCode(content: string, validCodes: string[]): string | null {
   const upper = content.toUpperCase();
-  // Split on non-alphanumeric delimiters and match whole tokens only
-  const tokens = upper.split(/[^A-Z0-9]+/);
-  return validCodes.find((code) => tokens.includes(code)) ?? null;
+  return validCodes.find((code) => new RegExp(code).test(upper)) ?? null;
 }
 
 /** Add 30 days to a date (subscription period). */
