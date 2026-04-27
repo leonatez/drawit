@@ -3,8 +3,9 @@ import { createAdminSupabase } from '@/lib/supabase/server';
 import { verifyWebhookApiKey, extractOrderCode, addSubscriptionMonth } from '@/lib/payment/sepay-utils';
 
 export async function POST(request: NextRequest) {
-  // Verify SePay API key (SePay sends it in the Authorization header)
-  const apiKey = request.headers.get('Authorization');
+  // SePay sends: Authorization: Apikey <secret>
+  const authHeader = request.headers.get('Authorization') ?? '';
+  const apiKey = authHeader.startsWith('Apikey ') ? authHeader.slice(7) : authHeader;
   if (!verifyWebhookApiKey(apiKey)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
@@ -14,6 +15,11 @@ export async function POST(request: NextRequest) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 });
+  }
+
+  // Only process incoming transfers
+  if (body.transferType !== 'in') {
+    return NextResponse.json({ success: true });
   }
 
   const content = String(body.content ?? body.transferContent ?? body.description ?? '');
