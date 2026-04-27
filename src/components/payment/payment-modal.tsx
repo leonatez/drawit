@@ -142,25 +142,45 @@ export default function PaymentModal() {
                 Loading plans…
               </div>
             )}
-            {plans.map((plan) => (
-              <button
-                key={plan.id}
-                onClick={() => handleSelectPlan(plan)}
-                disabled={loadingPlanId !== null}
-                className="w-full text-left bg-[#0f172a] border border-[#334155] hover:border-[#14b8a6] rounded-xl p-4 transition-colors disabled:opacity-60"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-[#f1f5f9]">{plan.name}</span>
-                  {loadingPlanId === plan.id
-                    ? <Loader2 size={14} className="animate-spin text-[#14b8a6]" />
-                    : <span className="text-sm font-bold text-[#14b8a6]">
-                        {plan.price_vnd.toLocaleString('vi-VN')} ₫/mo
-                      </span>
-                  }
-                </div>
-                <p className="text-xs text-[#64748b]">{plan.description}</p>
-              </button>
-            ))}
+            {plans.map((plan) => {
+              const isCurrent = user?.user_type === plan.user_type;
+              const isRecommended = user?.user_type === 'member' && plan.user_type === 'premium';
+              return (
+                <button
+                  key={plan.id}
+                  onClick={() => handleSelectPlan(plan)}
+                  disabled={loadingPlanId !== null}
+                  className={`w-full text-left rounded-xl p-4 transition-colors disabled:opacity-60 border ${
+                    isRecommended
+                      ? 'bg-[#0f172a] border-[#fb923c] hover:border-[#fb923c]'
+                      : 'bg-[#0f172a] border-[#334155] hover:border-[#14b8a6]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-[#f1f5f9]">{plan.name}</span>
+                      {isCurrent && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#14b8a61a] text-[#14b8a6] font-semibold">
+                          Current
+                        </span>
+                      )}
+                      {isRecommended && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#fb923c1a] text-[#fb923c] font-semibold">
+                          Recommended
+                        </span>
+                      )}
+                    </div>
+                    {loadingPlanId === plan.id
+                      ? <Loader2 size={14} className="animate-spin text-[#14b8a6]" />
+                      : <span className={`text-sm font-bold ${isRecommended ? 'text-[#fb923c]' : 'text-[#14b8a6]'}`}>
+                          {plan.price_vnd.toLocaleString('vi-VN')} ₫/mo
+                        </span>
+                    }
+                  </div>
+                  <p className="text-xs text-[#64748b]">{plan.description}</p>
+                </button>
+              );
+            })}
           </div>
         )}
 

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {
   MousePointer2, Square, Upload, Settings, LogOut,
-  LogIn, Save, ChevronDown, FolderOpen, KeyRound,
+  LogIn, Save, ChevronDown, FolderOpen, KeyRound, Zap,
 } from 'lucide-react';
 import { useEditorStore } from '@/store';
 import { sceneSerializerRef } from '@/lib/scene-ref';
@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 export default function TopBar() {
   const {
     tool, setTool, user, setShowAuth, setShowAdmin, setShowProjects, setShowChangePw,
-    projectName, setProjectName, isDirty, toProject,
+    setShowPayment, projectName, setProjectName, isDirty, toProject,
     markClean, adminSettings,
   } = useEditorStore();
 
@@ -186,6 +186,18 @@ export default function TopBar() {
         </div>
       )}
 
+      {/* Upgrade pill — visible for member users as persistent CTA */}
+      {user?.user_type === 'member' && (
+        <button
+          onClick={() => setShowPayment(true)}
+          className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fb923c1a] text-[#fb923c] hover:bg-[#fb923c33] transition-colors border border-[#fb923c33]"
+          title="Upgrade to Premium"
+        >
+          <Zap size={9} />
+          Upgrade
+        </button>
+      )}
+
       {/* Admin settings */}
       {isAdmin && (
         <button
@@ -249,6 +261,31 @@ export default function TopBar() {
               >
                 <Settings size={11} /> Admin Panel
               </button>
+            )}
+            {/* Upgrade to Premium — member only */}
+            {user?.user_type === 'member' && (
+              <button
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#fb923c] hover:bg-[#334155] text-left font-medium"
+                onClick={() => { setShowPayment(true); setShowUserMenu(false); }}
+              >
+                <Zap size={11} /> Upgrade to Premium
+              </button>
+            )}
+            {/* Get started — guest only */}
+            {user?.user_type === 'guest' && (
+              <button
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#14b8a6] hover:bg-[#334155] text-left font-medium"
+                onClick={() => { setShowPayment(true); setShowUserMenu(false); }}
+              >
+                <Zap size={11} /> Get AI Access
+              </button>
+            )}
+            {/* Premium subscription info */}
+            {user?.user_type === 'premium' && user.subscription_expires_at && (
+              <div className="px-3 py-1.5 text-[10px] text-[#64748b]">
+                <span className="text-[#fb923c] font-medium">Premium</span> · expires{' '}
+                {new Date(user.subscription_expires_at).toLocaleDateString('vi-VN')}
+              </div>
             )}
             <button
               className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#f1f5f9] hover:bg-[#334155] text-left"

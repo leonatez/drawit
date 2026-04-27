@@ -89,6 +89,13 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
+-- ─── AI usage tracking columns (idempotent migrations for existing DBs) ────────
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ai_daily_count         INTEGER  NOT NULL DEFAULT 0;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ai_daily_reset_date    DATE     NOT NULL DEFAULT CURRENT_DATE;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ai_monthly_count       INTEGER  NOT NULL DEFAULT 0;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ai_monthly_reset_month SMALLINT NOT NULL DEFAULT EXTRACT(MONTH FROM NOW())::SMALLINT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ai_monthly_reset_year  SMALLINT NOT NULL DEFAULT EXTRACT(YEAR FROM NOW())::SMALLINT;
+
 -- ─── Payment system ───────────────────────────────────────────────────────────
 
 -- Add subscription expiry to profiles (idempotent)

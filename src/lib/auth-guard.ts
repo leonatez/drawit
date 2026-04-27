@@ -28,11 +28,22 @@ export async function requireMember(): Promise<AuthGuardResult> {
   }
 
   const admin = createAdminSupabase();
-  const { data: profile } = await admin
+  const { data: profile, error: profileError } = await admin
     .from('profiles')
     .select('user_type, subscription_expires_at')
     .eq('id', user.id)
     .single();
+
+  if (profileError) {
+    console.error('[auth-guard] Profile query failed:', profileError.message);
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Failed to load user profile. Please try again.' },
+        { status: 500 },
+      ),
+    };
+  }
 
   const role = profile?.user_type ?? 'guest';
   if (role !== 'member' && role !== 'premium' && role !== 'admin') {
