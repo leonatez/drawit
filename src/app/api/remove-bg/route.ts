@@ -11,8 +11,8 @@ import sharp from 'sharp';
 
 const execFileAsync = promisify(execFile);
 
-const PYTHON = process.env.PYTHON_BIN ?? 'python3';
-const SCRIPT = path.join(process.cwd(), 'scripts', 'remove_bg.py');
+const RMBG_BIN = process.env.RMBG_BIN ?? 'rmbg';
+const VALID_MODELS = new Set(['modnet', 'briaai', 'u2netp']);
 
 function isPathSafe(storagePath: string): boolean {
   const resolved = path.resolve(storagePath);
@@ -41,21 +41,20 @@ export async function POST(req: NextRequest) {
     }
 
     const settings = await loadAdminSettings();
+    const model = VALID_MODELS.has(settings.rmbg_model) ? settings.rmbg_model : 'modnet';
+
     const newId = nanoid();
-    const tmpPng = path.join(os.tmpdir(), `drawit-rmbg-${newId}.png`);
+    const tmpOut = path.join(os.tmpdir(), `drawit-rmbg-${newId}.png`);
 
-    await execFileAsync(PYTHON, [
-      SCRIPT,
+    await execFileAsync(RMBG_BIN, [
       picture.storagePath,
-      tmpPng,
-      String(settings.rmbg_sat_thresh),
-      String(settings.rmbg_val_thresh),
-    ], { timeout: 60_000 });
+      '-o', tmpOut,
+      '-m', model,
+    ], { timeout: 120_000 });
 
-    const resultBuf = await fs.readFile(tmpPng);
-    await fs.rm(tmpPng, { force: true });
+    const resultBuf = await fs.readFile(tmpOut);
+    await fs.rm(tmpOut, { force: true });
 
-    // Verify it's valid PNG via sharp, get metadata
     const meta = await sharp(resultBuf).metadata();
     const storagePath = await savePictureFile(projectId, newId, resultBuf);
 

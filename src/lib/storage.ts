@@ -185,8 +185,7 @@ const defaultSettings: AdminSettings = {
   vec_n_colors: 12,
   vec_min_area: 8,
   vec_smoothing: 0.6,
-  rmbg_sat_thresh: 30,
-  rmbg_val_thresh: 220,
+  rmbg_model: 'modnet',
 };
 
 export async function loadAdminSettings(): Promise<AdminSettings> {

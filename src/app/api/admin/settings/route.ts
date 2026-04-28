@@ -27,8 +27,7 @@ export async function PUT(req: NextRequest) {
     vec_n_colors: body.vec_n_colors ?? settings.vec_n_colors,
     vec_min_area: body.vec_min_area ?? settings.vec_min_area,
     vec_smoothing: body.vec_smoothing ?? settings.vec_smoothing,
-    rmbg_sat_thresh: body.rmbg_sat_thresh ?? settings.rmbg_sat_thresh,
-    rmbg_val_thresh: body.rmbg_val_thresh ?? settings.rmbg_val_thresh,
+    rmbg_model: body.rmbg_model ?? settings.rmbg_model,
   };
   await saveAdminSettings(updated);
   return NextResponse.json({ ok: true, settings: updated });

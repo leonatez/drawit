@@ -231,23 +231,22 @@ export default function AdminPanel() {
               {/* ── Remove Background ── */}
               <div>
                 <h3 className="text-xs font-semibold text-[#f1f5f9] mb-3">Remove Background</h3>
-                <div className="bg-[#0f172a] rounded-lg p-4 space-y-4">
-                  <SettingSlider
-                    label="Saturation threshold"
-                    hint="Pixels with HSV saturation below this are treated as background. Lower = stricter (keeps more colors)"
-                    value={localSettings.rmbg_sat_thresh}
-                    min={5} max={80} step={1}
-                    format={(v) => String(v)}
-                    onChange={(v) => setLocalSettings((s) => ({ ...s, rmbg_sat_thresh: v }))}
-                  />
-                  <SettingSlider
-                    label="Brightness threshold"
-                    hint="Pixels with HSV brightness above this are treated as background. Higher = stricter (only removes near-pure white)"
-                    value={localSettings.rmbg_val_thresh}
-                    min={150} max={255} step={1}
-                    format={(v) => String(v)}
-                    onChange={(v) => setLocalSettings((s) => ({ ...s, rmbg_val_thresh: v }))}
-                  />
+                <div className="bg-[#0f172a] rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-[#f1f5f9] font-medium">AI model</span>
+                  </div>
+                  <p className="text-[10px] text-[#64748b] mb-2">
+                    modnet — fast, good quality &nbsp;|&nbsp; briaai — slower, excellent quality &nbsp;|&nbsp; u2netp — fastest, fair quality
+                  </p>
+                  <select
+                    value={localSettings.rmbg_model}
+                    onChange={(e) => setLocalSettings((s) => ({ ...s, rmbg_model: e.target.value }))}
+                    className="w-full bg-[#1e293b] border border-[#334155] text-[#f1f5f9] text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-[#14b8a6]"
+                  >
+                    <option value="modnet">modnet — balanced (default)</option>
+                    <option value="briaai">briaai — high quality</option>
+                    <option value="u2netp">u2netp — fastest</option>
+                  </select>
                 </div>
               </div>
 
