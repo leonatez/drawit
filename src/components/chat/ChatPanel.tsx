@@ -187,8 +187,13 @@ export default function ChatPanel() {
 function MessageBubble({ msg }: { msg: ChatMessage }) {
   const isUser = msg.role === 'user';
 
-  // Highlight @mentions in message content
-  const highlighted = msg.content.replace(/@([\w-]+)/g, '<span style="color:#14b8a6;font-weight:600">@$1</span>');
+  // Escape HTML then highlight @mentions — prevents XSS from AI-sourced content
+  const escaped = msg.content
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  const highlighted = escaped.replace(/@([\w-]+)/g, '<span style="color:#14b8a6;font-weight:600">@$1</span>');
 
   return (
     <div className={`flex gap-2 items-start ${isUser ? 'flex-row-reverse' : ''}`}>

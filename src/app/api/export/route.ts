@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
       headers: {
         'Content-Type': 'image/png',
         'Content-Disposition': `attachment; filename="${filename}.png"`,
+        'X-Content-Type-Options': 'nosniff',
       },
     });
   } catch {

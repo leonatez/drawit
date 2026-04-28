@@ -63,9 +63,13 @@ export async function savePictureFile(
   return filepath;
 }
 
-/** Read a picture file as a Buffer */
+/** Read a picture file as a Buffer — rejects paths outside data/ to prevent traversal */
 export async function readPictureFile(storagePath: string): Promise<Buffer> {
-  return fs.readFile(storagePath);
+  const resolved = path.resolve(storagePath);
+  if (!resolved.startsWith(DATA_DIR + path.sep) && resolved !== DATA_DIR) {
+    throw new Error('Forbidden path');
+  }
+  return fs.readFile(resolved);
 }
 
 /** Read a picture file as base64 */

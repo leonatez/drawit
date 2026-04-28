@@ -6,19 +6,23 @@ import os from 'os';
 import fs from 'fs/promises';
 import { nanoid } from 'nanoid';
 import { loadProject, saveVectorFile, loadAdminSettings } from '@/lib/storage';
+import { requireMember } from '@/lib/auth-guard';
 
 const execFileAsync = promisify(execFile);
 
-const PYTHON = '/home/linh-nguyen/miniconda3/bin/python3';
+const PYTHON = process.env.PYTHON_BIN ?? 'python3';
 const SCRIPT = path.join(process.cwd(), 'scripts', 'vectorize.py');
 
 function isPathSafe(storagePath: string): boolean {
   const resolved = path.resolve(storagePath);
   const dataDir = path.resolve(process.cwd(), 'data');
-  return resolved.startsWith(dataDir);
+  return resolved.startsWith(dataDir + path.sep) || resolved === dataDir;
 }
 
 export async function POST(req: NextRequest) {
+  const guard = await requireMember();
+  if (!guard.ok) return guard.response;
+
   try {
     const { projectId, pictureId } = await req.json();
     if (!projectId || !pictureId) {
