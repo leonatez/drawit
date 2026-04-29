@@ -11,7 +11,7 @@ import sharp from 'sharp';
 
 const execFileAsync = promisify(execFile);
 
-const RMBG_BIN = process.env.RMBG_BIN ?? 'rmbg';
+const RMBG_BIN = process.env.RMBG_BIN ?? path.join(process.cwd(), 'node_modules', '.bin', 'rmbg');
 const VALID_MODELS = new Set(['modnet', 'briaai', 'u2netp']);
 
 function isPathSafe(storagePath: string): boolean {
