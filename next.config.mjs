@@ -2,7 +2,7 @@
 const nextConfig = {
   output: 'standalone',
   experimental: {
-    serverComponentsExternalPackages: ['sharp'],
+    serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
   },
   webpack: (config, { isServer }) => {
     // Excalidraw needs these browser polyfills disabled

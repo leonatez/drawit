@@ -36,9 +36,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
-# Install rmbg globally — node_modules is not present in standalone mode
-RUN npm install -g rmbg
-
 USER nextjs
 
 EXPOSE 3000

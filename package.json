@@ -14,6 +14,7 @@
   "dependencies": {
     "@excalidraw/excalidraw": "^0.17.6",
     "@google/generative-ai": "^0.21.0",
+    "@rmbg/model-modnet": "^0.0.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.4",
     "clsx": "^2.1.1",

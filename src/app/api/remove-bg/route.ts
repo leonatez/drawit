@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import path from 'path';
-import os from 'os';
-import fs from 'fs/promises';
 import { nanoid } from 'nanoid';
-import { loadProject, savePictureFile, loadAdminSettings } from '@/lib/storage';
-import { requireMember } from '@/lib/auth-guard';
+import { rmbg, createModnetModel, createBriaaiModel, createU2netpModel } from 'rmbg';
 import sharp from 'sharp';
+import { loadProject, readPictureFile, savePictureFile, loadAdminSettings } from '@/lib/storage';
+import { requireMember } from '@/lib/auth-guard';
 
-const execFileAsync = promisify(execFile);
-
-const RMBG_BIN = process.env.RMBG_BIN ?? 'rmbg';
 const VALID_MODELS = new Set(['modnet', 'briaai', 'u2netp']);
+
+function getModelConfig(name: string) {
+  if (name === 'briaai') return createBriaaiModel();
+  if (name === 'u2netp') return createU2netpModel();
+  return createModnetModel();
+}
 
 function isPathSafe(storagePath: string): boolean {
   const resolved = path.resolve(storagePath);
@@ -41,21 +41,13 @@ export async function POST(req: NextRequest) {
     }
 
     const settings = await loadAdminSettings();
-    const model = VALID_MODELS.has(settings.rmbg_model) ? settings.rmbg_model : 'modnet';
+    const modelName = VALID_MODELS.has(settings.rmbg_model) ? settings.rmbg_model : 'modnet';
 
-    const newId = nanoid();
-    const tmpOut = path.join(os.tmpdir(), `drawit-rmbg-${newId}.png`);
-
-    await execFileAsync(RMBG_BIN, [
-      picture.storagePath,
-      '-o', tmpOut,
-      '-m', model,
-    ], { timeout: 120_000 });
-
-    const resultBuf = await fs.readFile(tmpOut);
-    await fs.rm(tmpOut, { force: true });
+    const inputBuf = await readPictureFile(picture.storagePath);
+    const resultBuf = await rmbg(inputBuf, { model: getModelConfig(modelName) }) as Buffer;
 
     const meta = await sharp(resultBuf).metadata();
+    const newId = nanoid();
     const storagePath = await savePictureFile(projectId, newId, resultBuf);
 
     return NextResponse.json({
