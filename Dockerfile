@@ -1,5 +1,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
+ENV NODE_OPTIONS=--dns-result-order=ipv4first
+RUN npm config set registry https://registry.npmmirror.com
 COPY package.json package-lock.json* ./
 RUN npm ci
 
