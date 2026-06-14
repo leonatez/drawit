@@ -1,11 +1,11 @@
-FROM node:20-alpine AS deps
+FROM node:20-slim AS deps
 WORKDIR /app
 ENV NODE_OPTIONS=--dns-result-order=ipv4first
 RUN npm config set registry https://registry.npmmirror.com
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
