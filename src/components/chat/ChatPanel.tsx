@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { MessageSquare, Sparkles, Lock } from 'lucide-react';
+import { MessageSquare, Sparkles, Lock, AlertTriangle } from 'lucide-react';
 import { useEditorStore } from '@/store';
 import { parseMentions } from '@/lib/utils';
 import type { ResolvedMention, ChatMessage } from '@/types';
@@ -13,6 +13,7 @@ export default function ChatPanel() {
     chatMessages, user, pictures, selectionBoxes, projectId,
     isAiLoading, setAiLoading, addChatMessage, createVersion,
     getPictureByName, getBoxByLabel, setShowAuth, setLimitExceeded,
+    availableModels, selectedModel, setSelectedModel,
   } = useEditorStore();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -64,12 +65,17 @@ export default function ChatPanel() {
       mentions.push({ label: pictures[0].name, type: 'picture', pictureId: pictures[0].id });
     }
 
+    // Snapshot the project this request is for — a slow (e.g. VILAO) response arriving after
+    // the user switches projects must not mutate the newly-active project's state (RED TEAM Finding 15).
+    const requestProjectId = projectId;
+    const isStaleResponse = () => useEditorStore.getState().projectId !== requestProjectId;
+
     setAiLoading(true);
     try {
       const res = await fetch('/api/ai/edit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, prompt: text, mentions }),
+        body: JSON.stringify({ projectId: requestProjectId, prompt: text, mentions, model: selectedModel || undefined }),
       });
 
       const data = await res.json();
@@ -80,16 +86,9 @@ export default function ChatPanel() {
       }
       if (!res.ok) throw new Error(data.error || 'AI request failed');
 
+      if (isStaleResponse()) return;
+
       if (data.success && data.editedImages?.length > 0) {
-        // Update picture data URLs in browser
-        for (const { pictureId, base64 } of data.editedImages) {
-          // Force image reload by busting cache
-          const pic = pictures.find((p) => p.id === pictureId);
-          if (pic) {
-            // Trigger re-fetch by updating the timestamp param — handled by img key
-            // The actual file was already updated on the server
-          }
-        }
         createVersion(`Edit: ${text.slice(0, 60)}`);
         addChatMessage({
           role: 'assistant',
@@ -100,13 +99,18 @@ export default function ChatPanel() {
         window.dispatchEvent(new CustomEvent('drawit:picture-updated'));
         toast.success('AI edit applied');
       } else {
-        addChatMessage({ role: 'assistant', content: data.message || 'No image was generated.' });
+        toast.error(data.message || 'No image was generated.');
+        addChatMessage({ role: 'assistant', content: data.message || 'No image was generated.', isError: true });
       }
     } catch (err: unknown) {
+      if (isStaleResponse()) return;
       const msg = err instanceof Error ? err.message : String(err);
       toast.error(msg);
-      addChatMessage({ role: 'assistant', content: `❌ ${msg}` });
+      addChatMessage({ role: 'assistant', content: `❌ ${msg}`, isError: true });
     } finally {
+      // isAiLoading is a global UI flag, not project-scoped data — always clear it regardless of
+      // whether the project changed mid-request, otherwise a project switch during a slow (VILAO)
+      // request permanently locks the input for every project until a page reload.
       setAiLoading(false);
     }
   };
@@ -168,7 +172,21 @@ export default function ChatPanel() {
       {/* Input */}
       <div className="border-t border-[#334155] p-2">
         {isMember ? (
-          <MentionInput onSend={handleSend} disabled={isAiLoading} />
+          <>
+            {availableModels.length > 0 && (
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                disabled={isAiLoading}
+                className="w-full mb-1.5 px-2 py-1 rounded-md bg-[#0f172a] border border-[#334155] text-[10px] text-[#f1f5f9] disabled:opacity-50"
+              >
+                {availableModels.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            )}
+            <MentionInput onSend={handleSend} disabled={isAiLoading} />
+          </>
         ) : (
           <button
             onClick={() => setShowAuth(true)}
@@ -184,31 +202,39 @@ export default function ChatPanel() {
 
 // ─── MessageBubble ─────────────────────────────────────────────────────────
 
-function MessageBubble({ msg }: { msg: ChatMessage }) {
-  const isUser = msg.role === 'user';
-
-  // Escape HTML then highlight @mentions — prevents XSS from AI-sourced content
-  const escaped = msg.content
+// Provider error text (VILAO raw-body fallback especially) is untrusted third-party content —
+// escape it before mention-highlighting so it can never be interpreted as HTML/script.
+function escapeHtml(s: string): string {
+  return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  const highlighted = escaped.replace(/@([\w-]+)/g, '<span style="color:#14b8a6;font-weight:600">@$1</span>');
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function MessageBubble({ msg }: { msg: ChatMessage }) {
+  const isUser = msg.role === 'user';
+  const isError = !isUser && msg.isError;
+
+  // Highlight @mentions in message content (escape first — content may contain provider error text)
+  const highlighted = escapeHtml(msg.content).replace(/@([\w-]+)/g, '<span style="color:#14b8a6;font-weight:600">@$1</span>');
 
   return (
     <div className={`flex gap-2 items-start ${isUser ? 'flex-row-reverse' : ''}`}>
       <div
         className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold"
-        style={{ background: isUser ? '#14b8a6' : '#334155', color: isUser ? '#0f172a' : '#f1f5f9' }}
+        style={{ background: isError ? '#7f1d1d' : isUser ? '#14b8a6' : '#334155', color: isUser ? '#0f172a' : '#f1f5f9' }}
       >
-        {isUser ? 'U' : 'AI'}
+        {isError ? <AlertTriangle size={12} /> : isUser ? 'U' : 'AI'}
       </div>
       <div
         className="max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed"
         style={{
-          background: isUser ? 'rgba(20,184,166,0.12)' : '#0f172a',
+          background: isError ? 'rgba(239,68,68,0.12)' : isUser ? 'rgba(20,184,166,0.12)' : '#0f172a',
+          border: isError ? '1px solid rgba(239,68,68,0.4)' : undefined,
           borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-          color: '#f1f5f9',
+          color: isError ? '#fca5a5' : '#f1f5f9',
         }}
         dangerouslySetInnerHTML={{ __html: highlighted }}
       />

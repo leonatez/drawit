@@ -539,7 +539,10 @@ Create a `.env.local` file at the project root with the following variables:
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL (exposed to browser) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous/public key (exposed to browser) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key — server-only, bypasses RLS; used in admin routes and `requireMember()` |
-| `GEMINI_API_KEY` | Yes | Google Gemini API key — server-only, used in `src/lib/ai/gemini.ts` |
+| `GEMINI_API_KEY` | Yes | Google Gemini API key — server-only, used in `src/lib/ai/providers/gemini-provider.ts` and `src/lib/ai/gemini.ts` (upscale) |
+| `VILAO_API_KEY` | For VILAO models | VILAO (OpenAI-compatible image-edit reseller) API key — server-only, used in `src/lib/ai/providers/vilao-provider.ts`. Not required if `MODELS` only lists `gemini/*` entries. |
+| `VILAO_BASE_URL` | No | Override for VILAO's edit endpoint. Defaults to `https://api.vilao.ai/v1/images/edits` (unconfirmed — verify before enabling `vilao/*` models in production). |
+| `MODELS` | No | Server-only, comma-separated list of `<provider>/<modelName>` AI edit models, e.g. `gemini/gemini-3.1-flash-image-preview,vilao/gtm/gpt-image-2`. First entry is the default. Falls back to Gemini-only if unset. Exposed to the client (IDs only, never keys) via member-gated `GET /api/ai/models`. |
 
 ---
 

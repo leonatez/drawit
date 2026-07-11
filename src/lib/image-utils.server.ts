@@ -51,3 +51,43 @@ export async function resizeImage(
     .png()
     .toBuffer();
 }
+
+/**
+ * Builds an OpenAI/VILAO-style edit mask: opaque everywhere except a transparent
+ * hole punched at each box (transparent = editable region). Coordinates are clamped
+ * to the image bounds and degenerate (zero/negative-area) boxes are dropped rather
+ * than composited, since raw SVG geometry from a resize-drag edge case could
+ * otherwise produce an invalid rect.
+ */
+export async function generateEditMask(
+  imageBase64: string,
+  boxes: { relX: number; relY: number; relW: number; relH: number }[],
+): Promise<Buffer> {
+  const sharp = (await import('sharp')).default;
+  const buf = Buffer.from(imageBase64, 'base64');
+  const meta = await sharp(buf).metadata();
+  if (!meta.width || !meta.height) {
+    throw new Error('generateEditMask: could not read source image dimensions');
+  }
+  const w = meta.width;
+  const h = meta.height;
+  const clamp = (v: number, max: number) => Math.max(0, Math.min(max, Math.round(v)));
+
+  const rects = boxes
+    .map((b) => ({
+      x: clamp(b.relX * w, w),
+      y: clamp(b.relY * h, h),
+      width: clamp(b.relW * w, w),
+      height: clamp(b.relH * h, h),
+    }))
+    .filter((r) => r.width > 0 && r.height > 0)
+    .map((r) => `<rect x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}" fill="white"/>`)
+    .join('');
+
+  const holes = `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
+
+  return sharp({ create: { width: w, height: h, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 1 } } })
+    .composite([{ input: Buffer.from(holes), blend: 'dest-out' }])
+    .png()
+    .toBuffer();
+}

@@ -53,6 +53,10 @@ interface EditorStore {
   isAiLoading: boolean;
   limitExceeded: { limitType: 'daily' | 'monthly'; limit: number; used: number; tier: string } | null;
 
+  // ── AI model selection (session-only, NOT persisted to project.json) ───────
+  availableModels: string[];
+  selectedModel: string;
+
   // ── Undo ──────────────────────────────────────────────────────────────────
   undoStack: UndoEntry[];
 
@@ -103,6 +107,10 @@ interface EditorStore {
   setAiLoading: (v: boolean) => void;
   setLimitExceeded: (v: EditorStore['limitExceeded']) => void;
 
+  // AI model selection
+  setAvailableModels: (list: string[]) => void;
+  setSelectedModel: (id: string) => void;
+
   // Undo
   pushUndo: (entry: UndoEntry) => void;
   undo: () => void;
@@ -143,6 +151,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   showPayment: false,
   isAiLoading: false,
   limitExceeded: null,
+
+  availableModels: [],
+  selectedModel: '',
 
   undoStack: [],
 
@@ -319,6 +330,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   setAiLoading: (v) => set({ isAiLoading: v }),
   setLimitExceeded: (v) => set({ limitExceeded: v }),
   setShowPayment: (v) => set({ showPayment: v }),
+
+  setAvailableModels: (list) => set({ availableModels: list }),
+  setSelectedModel: (id) => set({ selectedModel: id }),
 
   // ── Undo ───────────────────────────────────────────────────────────────────
   pushUndo: (entry) =>

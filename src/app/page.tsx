@@ -105,6 +105,17 @@ export default function HomePage() {
       .then(({ settings }) => {
         if (settings) useEditorStore.getState().setAdminSettings(settings);
       });
+
+    // Load available AI models — member-gated, so guests get a 401; degrade to an empty list
+    fetch('/api/ai/models')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        const s = useEditorStore.getState();
+        s.setAvailableModels(data.models ?? []);
+        if (data.default) s.setSelectedModel(data.default);
+      })
+      .catch(() => { /* guest / network error — dropdown stays empty */ });
   }, []);
 
   // ── Auto-save ──────────────────────────────────────────────────────────────

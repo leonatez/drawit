@@ -45,6 +45,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   editedPictureId?: string;  // if AI returned an edited picture, store which one
+  isError?: boolean;         // true when this message reports a failed AI edit (provider error/refusal)
   createdAt: string;
 }
 
@@ -128,6 +129,8 @@ export interface EditRequest {
   prompt: string;
   // Resolved mentions: { mentionLabel, type, pictureId, box? }
   mentions: ResolvedMention[];
+  // "<provider>/<modelName>", e.g. "gemini/gemini-3.1-flash-image-preview"; defaults server-side if omitted
+  model?: string;
 }
 
 export interface ResolvedMention {

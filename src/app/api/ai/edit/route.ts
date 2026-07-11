@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { editImage } from '@/lib/ai/gemini';
+import { editImageWithProvider, getConfiguredModels } from '@/lib/ai/providers';
 import { readPictureBase64, savePictureFile, loadProject, saveProject, saveVersionSnapshot } from '@/lib/storage';
 import { parseMentions } from '@/lib/utils';
 import { requireMember, checkAndIncrementUsage } from '@/lib/auth-guard';
@@ -14,10 +14,18 @@ export async function POST(req: NextRequest) {
   if (!usage.ok) return usage.response;
 
   const body: EditRequest = await req.json();
-  const { projectId, prompt, mentions } = body;
+  const { projectId, prompt, mentions, model } = body;
 
   if (!projectId || !prompt) {
     return NextResponse.json({ error: 'projectId and prompt required' }, { status: 400 });
+  }
+
+  // RED TEAM Finding 1: client-supplied model must be in the server's own allowlist —
+  // never dispatch to an arbitrary model/provider string using the server's API keys.
+  const configuredModels = getConfiguredModels();
+  const modelId = model || configuredModels[0];
+  if (!configuredModels.includes(modelId)) {
+    return NextResponse.json({ error: `Unsupported model: ${modelId}` }, { status: 400 });
   }
 
   const project = await loadProject(projectId);
@@ -84,13 +92,21 @@ export async function POST(req: NextRequest) {
     return m;
   });
 
-  // Call Gemini
-  const result = await editImage({
-    prompt,
-    mentions: enrichedMentions,
-    pictureBase64Map,
-    targetPictureId,
-  });
+  // Dispatch to the resolved provider. Provider functions are contracted to never throw
+  // (RED TEAM Finding 3), but this try/catch is a defense-in-depth backstop so a future
+  // provider bug can't crash the route past the version-snapshot-already-saved point.
+  let result;
+  try {
+    result = await editImageWithProvider(modelId, {
+      prompt,
+      mentions: enrichedMentions,
+      pictureBase64Map,
+      targetPictureId,
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    result = { editedBase64: null, message: `Provider error: ${msg}` };
+  }
 
   const editedImages: { pictureId: string; base64: string }[] = [];
 
